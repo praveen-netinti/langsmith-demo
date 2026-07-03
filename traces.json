@@ -1,0 +1,5209 @@
+{
+  "$schema_note": "Mock dataset for the tracing-UI take-home (~50 traces). A `trace` is one top-level execution of an LLM app. Each trace owns a tree of `spans` (runs) linked by `parentId` (null = root). Timestamps are ISO-8601 UTC over the window 2026-06-07 to 2026-06-14. `latencyMs` is a span's own wall-clock duration. IMPORTANT DETAILS: (1) `status` is `success` | `error` | `running`. A `running` trace/span is still in flight — it has NO `endTime` and NO `latencyMs` and a null `output`; design a live/in-progress state for these. (2) Sibling spans under the same parent may OVERLAP in time (e.g. parallel_research_agent fans out three retrievers at once, multi_agent_orchestrator runs workers concurrently) — your timeline/waterfall must handle overlap, not assume sequential. (3) Per-span token/cost fields (`model`, `promptTokens`, `completionTokens`, `totalTokens`, `costUsd`) appear only on `llm` spans. Each trace also carries its own `totalTokens`/`totalCostUsd` rollup — you can trust those or recompute them from the spans, just be consistent. (4) Many finished traces carry an optional `feedback` object (rating up/down, numeric score, optional comment). (5) The first ~10 traces are hand-crafted with rich inputs/outputs; the rest are generated for volume.",
+  "traces": [
+    {
+      "id": "trace_g0382",
+      "name": "image_caption_pipeline",
+      "status": "running",
+      "startTime": "2026-06-13T23:59:58.592Z",
+      "tags": [
+        "production",
+        "vision",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6745",
+        "sessionId": "sess_984q",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 2098,
+      "totalCostUsd": 0.0083,
+      "spans": [
+        {
+          "id": "trace_g0382_s0",
+          "parentId": null,
+          "name": "ImageCaptionPipelineExecutor",
+          "type": "chain",
+          "status": "running",
+          "startTime": "2026-06-13T23:59:58.592Z",
+          "input": {
+            "request": "image_caption_pipeline"
+          },
+          "output": null
+        },
+        {
+          "id": "trace_g0382_s1",
+          "parentId": "trace_g0382_s0",
+          "name": "download_image",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-13T23:59:58.608Z",
+          "endTime": "2026-06-13T23:59:59.550Z",
+          "latencyMs": 942,
+          "input": {
+            "url": "https://cdn.acme.com/img.jpg"
+          },
+          "output": {
+            "bytes": 143098
+          }
+        },
+        {
+          "id": "trace_g0382_s2",
+          "parentId": "trace_g0382_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "running",
+          "startTime": "2026-06-13T23:59:59.570Z",
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "[image] Caption this."
+              }
+            ]
+          },
+          "output": null,
+          "model": "gpt-4o",
+          "promptTokens": 1688,
+          "completionTokens": 410,
+          "totalTokens": 2098,
+          "costUsd": 0.00832
+        }
+      ]
+    },
+    {
+      "id": "trace_g0116",
+      "name": "customer_support_agent",
+      "status": "error",
+      "startTime": "2026-06-13T22:43:22.134Z",
+      "tags": [
+        "staging",
+        "support",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_2323",
+        "sessionId": "sess_esgi",
+        "environment": "staging",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 3019,
+      "totalCostUsd": 0.008,
+      "spans": [
+        {
+          "id": "trace_g0116_s0",
+          "parentId": null,
+          "name": "CustomerSupportAgentExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-13T22:43:22.134Z",
+          "input": {
+            "request": "customer_support_agent"
+          },
+          "output": null,
+          "endTime": "2026-06-13T22:43:24.436Z",
+          "latencyMs": 2302,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0116_s1",
+          "parentId": "trace_g0116_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T22:43:22.150Z",
+          "endTime": "2026-06-13T22:43:24.189Z",
+          "latencyMs": 2039,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "I can't log in — it says my account is locked."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "name": "lookup_account"
+              }
+            ]
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2956,
+          "completionTokens": 63,
+          "totalTokens": 3019,
+          "costUsd": 0.00802
+        },
+        {
+          "id": "trace_g0116_s2",
+          "parentId": "trace_g0116_s0",
+          "name": "lookup_order",
+          "type": "tool",
+          "status": "error",
+          "startTime": "2026-06-13T22:43:24.206Z",
+          "endTime": "2026-06-13T22:43:24.424Z",
+          "latencyMs": 218,
+          "input": {
+            "query": "I can't log in — it says"
+          },
+          "output": null,
+          "error": "ToolException: connection refused"
+        }
+      ],
+      "endTime": "2026-06-13T22:43:24.436Z",
+      "latencyMs": 2302,
+      "feedback": {
+        "rating": "up",
+        "score": 0.41,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0125",
+      "name": "customer_support_agent",
+      "status": "success",
+      "startTime": "2026-06-13T22:28:31.379Z",
+      "tags": [
+        "development",
+        "support",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_1113",
+        "sessionId": "sess_g5lf",
+        "environment": "development",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 2674,
+      "totalCostUsd": 0.0115,
+      "spans": [
+        {
+          "id": "trace_g0125_s0",
+          "parentId": null,
+          "name": "CustomerSupportAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-13T22:28:31.379Z",
+          "input": {
+            "request": "customer_support_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-13T22:28:35.916Z",
+          "latencyMs": 4537
+        },
+        {
+          "id": "trace_g0125_s1",
+          "parentId": "trace_g0125_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T22:28:31.399Z",
+          "endTime": "2026-06-13T22:28:33.357Z",
+          "latencyMs": 1958,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "How do I reset my password?"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "name": "lookup_account"
+              }
+            ]
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1684,
+          "completionTokens": 287,
+          "totalTokens": 1971,
+          "costUsd": 0.00708
+        },
+        {
+          "id": "trace_g0125_s2",
+          "parentId": "trace_g0125_s0",
+          "name": "lookup_order",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-13T22:28:33.381Z",
+          "endTime": "2026-06-13T22:28:33.715Z",
+          "latencyMs": 334,
+          "input": {
+            "query": "How do I reset my passwo"
+          },
+          "output": {
+            "found": true
+          }
+        },
+        {
+          "id": "trace_g0125_s3",
+          "parentId": "trace_g0125_s0",
+          "name": "reset_credentials",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-13T22:28:33.736Z",
+          "endTime": "2026-06-13T22:28:34.060Z",
+          "latencyMs": 324,
+          "input": {},
+          "output": {
+            "status": "ok"
+          }
+        },
+        {
+          "id": "trace_g0125_s4",
+          "parentId": "trace_g0125_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T22:28:34.073Z",
+          "endTime": "2026-06-13T22:28:35.899Z",
+          "latencyMs": 1826,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "{...}"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Done — I've handled that for you."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 350,
+          "completionTokens": 353,
+          "totalTokens": 703,
+          "costUsd": 0.004405
+        }
+      ],
+      "endTime": "2026-06-13T22:28:35.916Z",
+      "latencyMs": 4537,
+      "feedback": {
+        "rating": "down",
+        "score": 0.48,
+        "comment": "Hallucinated a detail"
+      }
+    },
+    {
+      "id": "trace_g0220",
+      "name": "rag_doc_qa",
+      "status": "error",
+      "startTime": "2026-06-13T20:20:36.317Z",
+      "tags": [
+        "production",
+        "rag",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_5240",
+        "sessionId": "sess_2xef",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 4432,
+      "totalCostUsd": 0.0095,
+      "spans": [
+        {
+          "id": "trace_g0220_s0",
+          "parentId": null,
+          "name": "RagDocQaExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-13T20:20:36.317Z",
+          "input": {
+            "request": "rag_doc_qa"
+          },
+          "output": null,
+          "endTime": "2026-06-13T20:20:38.401Z",
+          "latencyMs": 2084,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0220_s1",
+          "parentId": "trace_g0220_s0",
+          "name": "embed_query",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T20:20:36.341Z",
+          "endTime": "2026-06-13T20:20:36.690Z",
+          "latencyMs": 349,
+          "input": {
+            "text": "Which regions is data residency supported in?"
+          },
+          "output": {
+            "dimensions": 1536
+          },
+          "model": "text-embedding-3-small",
+          "promptTokens": 2313,
+          "completionTokens": 0,
+          "totalTokens": 2313,
+          "costUsd": 0.000046
+        },
+        {
+          "id": "trace_g0220_s2",
+          "parentId": "trace_g0220_s0",
+          "name": "pinecone_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-13T20:20:36.707Z",
+          "endTime": "2026-06-13T20:20:36.953Z",
+          "latencyMs": 246,
+          "input": {
+            "topK": 5,
+            "namespace": "policies"
+          },
+          "output": {
+            "documents": [
+              {
+                "id": "doc_1",
+                "score": 0.9
+              }
+            ]
+          }
+        },
+        {
+          "id": "trace_g0220_s3",
+          "parentId": "trace_g0220_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "error",
+          "startTime": "2026-06-13T20:20:36.967Z",
+          "endTime": "2026-06-13T20:20:38.373Z",
+          "latencyMs": 1406,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Which regions is data residency supported in?"
+              }
+            ]
+          },
+          "output": null,
+          "model": "gpt-4o",
+          "promptTokens": 1567,
+          "completionTokens": 552,
+          "totalTokens": 2119,
+          "costUsd": 0.009437,
+          "error": "ToolException: connection refused"
+        }
+      ],
+      "endTime": "2026-06-13T20:20:38.401Z",
+      "latencyMs": 2084,
+      "feedback": {
+        "rating": "up",
+        "score": 0.49,
+        "comment": "Wrong tool used"
+      }
+    },
+    {
+      "id": "trace_g0149",
+      "name": "content_summarizer",
+      "status": "success",
+      "startTime": "2026-06-13T16:11:48.869Z",
+      "tags": [
+        "production",
+        "batch",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_2058",
+        "sessionId": "sess_6nhe",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 1708,
+      "totalCostUsd": 0.0056,
+      "spans": [
+        {
+          "id": "trace_g0149_s0",
+          "parentId": null,
+          "name": "ContentSummarizerExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-13T16:11:48.869Z",
+          "input": {
+            "request": "content_summarizer"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-13T16:11:50.498Z",
+          "latencyMs": 1629
+        },
+        {
+          "id": "trace_g0149_s1",
+          "parentId": "trace_g0149_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T16:11:48.898Z",
+          "endTime": "2026-06-13T16:11:50.410Z",
+          "latencyMs": 1512,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Summarize the renewable energy report."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Summary: ..."
+          },
+          "model": "claude-sonnet-4-6",
+          "promptTokens": 1665,
+          "completionTokens": 43,
+          "totalTokens": 1708,
+          "costUsd": 0.00564
+        },
+        {
+          "id": "trace_g0149_s2",
+          "parentId": "trace_g0149_s0",
+          "name": "parse_summary",
+          "type": "parser",
+          "status": "success",
+          "startTime": "2026-06-13T16:11:50.420Z",
+          "endTime": "2026-06-13T16:11:50.479Z",
+          "latencyMs": 59,
+          "input": {
+            "raw": "..."
+          },
+          "output": {
+            "summary": "..."
+          }
+        }
+      ],
+      "endTime": "2026-06-13T16:11:50.498Z",
+      "latencyMs": 1629
+    },
+    {
+      "id": "trace_g0075",
+      "name": "translation_batch",
+      "status": "success",
+      "startTime": "2026-06-13T12:17:40.603Z",
+      "tags": [
+        "production",
+        "batch",
+        "i18n",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_7836",
+        "sessionId": "sess_79vy",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 2631,
+      "totalCostUsd": 0.0033,
+      "spans": [
+        {
+          "id": "trace_g0075_s0",
+          "parentId": null,
+          "name": "TranslationBatchExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-13T12:17:40.603Z",
+          "input": {
+            "request": "translation_batch"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-13T12:17:41.640Z",
+          "latencyMs": 1037
+        },
+        {
+          "id": "trace_g0075_s1",
+          "parentId": "trace_g0075_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T12:17:40.624Z",
+          "endTime": "2026-06-13T12:17:41.634Z",
+          "latencyMs": 1010,
+          "input": {
+            "text": "Welcome to your dashboard",
+            "targetLang": "es"
+          },
+          "output": {
+            "role": "assistant",
+            "content": "[Spanish] ..."
+          },
+          "model": "claude-haiku-4-5",
+          "promptTokens": 2256,
+          "completionTokens": 375,
+          "totalTokens": 2631,
+          "costUsd": 0.003305
+        }
+      ],
+      "endTime": "2026-06-13T12:17:41.640Z",
+      "latencyMs": 1037,
+      "feedback": {
+        "rating": "up",
+        "score": 0.98,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0253",
+      "name": "code_review_agent",
+      "status": "running",
+      "startTime": "2026-06-13T07:45:51.664Z",
+      "tags": [
+        "production",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_7218",
+        "sessionId": "sess_e9tj",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 3998,
+      "totalCostUsd": 0.0174,
+      "spans": [
+        {
+          "id": "trace_g0253_s0",
+          "parentId": null,
+          "name": "CodeReviewAgentExecutor",
+          "type": "chain",
+          "status": "running",
+          "startTime": "2026-06-13T07:45:51.664Z",
+          "input": {
+            "request": "code_review_agent"
+          },
+          "output": null
+        },
+        {
+          "id": "trace_g0253_s1",
+          "parentId": "trace_g0253_s0",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-13T07:45:51.686Z",
+          "endTime": "2026-06-13T07:45:52.558Z",
+          "latencyMs": 872,
+          "input": {
+            "pr": 629
+          },
+          "output": {
+            "files": 5
+          }
+        },
+        {
+          "id": "trace_g0253_s2",
+          "parentId": "trace_g0253_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T07:45:52.564Z",
+          "endTime": "2026-06-13T07:45:56.792Z",
+          "latencyMs": 4228,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found N issues ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1923,
+          "completionTokens": 540,
+          "totalTokens": 2463,
+          "costUsd": 0.010208
+        },
+        {
+          "id": "trace_g0253_s3",
+          "parentId": "trace_g0253_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "running",
+          "startTime": "2026-06-13T07:45:56.803Z",
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Format as comments."
+              }
+            ]
+          },
+          "output": null,
+          "model": "gpt-4o",
+          "promptTokens": 1094,
+          "completionTokens": 441,
+          "totalTokens": 1535,
+          "costUsd": 0.007145
+        }
+      ]
+    },
+    {
+      "id": "trace_g0215",
+      "name": "parallel_research_agent",
+      "status": "running",
+      "startTime": "2026-06-13T06:07:58.546Z",
+      "tags": [
+        "production",
+        "research",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_1223",
+        "sessionId": "sess_l5f3",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 5580,
+      "totalCostUsd": 0.0172,
+      "spans": [
+        {
+          "id": "trace_g0215_s0",
+          "parentId": null,
+          "name": "ParallelResearchAgentExecutor",
+          "type": "chain",
+          "status": "running",
+          "startTime": "2026-06-13T06:07:58.546Z",
+          "input": {
+            "request": "parallel_research_agent"
+          },
+          "output": null
+        },
+        {
+          "id": "trace_g0215_s1",
+          "parentId": "trace_g0215_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-13T06:07:58.565Z",
+          "endTime": "2026-06-13T06:07:59.772Z",
+          "latencyMs": 1207,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Research: state of solid-state batteries in 2026"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Plan: search web, arxiv, news in parallel."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2785,
+          "completionTokens": 360,
+          "totalTokens": 3145,
+          "costUsd": 0.010563
+        },
+        {
+          "id": "trace_g0215_s2",
+          "parentId": "trace_g0215_s0",
+          "name": "web_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-13T06:07:59.816Z",
+          "endTime": "2026-06-13T06:08:01.176Z",
+          "latencyMs": 1360,
+          "input": {
+            "q": "state of solid-state batteries in 2026"
+          },
+          "output": {
+            "hits": 4
+          }
+        },
+        {
+          "id": "trace_g0215_s3",
+          "parentId": "trace_g0215_s0",
+          "name": "arxiv_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-13T06:07:59.836Z",
+          "endTime": "2026-06-13T06:08:00.741Z",
+          "latencyMs": 905,
+          "input": {
+            "q": "state of solid-state batteries in 2026"
+          },
+          "output": {
+            "hits": 6
+          }
+        },
+        {
+          "id": "trace_g0215_s4",
+          "parentId": "trace_g0215_s0",
+          "name": "news_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-13T06:07:59.832Z",
+          "endTime": "2026-06-13T06:08:00.154Z",
+          "latencyMs": 322,
+          "input": {
+            "q": "state of solid-state batteries in 2026"
+          },
+          "output": {
+            "hits": 13
+          }
+        },
+        {
+          "id": "trace_g0215_s5",
+          "parentId": "trace_g0215_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "running",
+          "startTime": "2026-06-13T06:08:01.191Z",
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Synthesize the findings."
+              }
+            ]
+          },
+          "output": null,
+          "model": "gpt-4o",
+          "promptTokens": 2360,
+          "completionTokens": 75,
+          "totalTokens": 2435,
+          "costUsd": 0.00665
+        }
+      ]
+    },
+    {
+      "id": "trace_g0081",
+      "name": "translation_batch",
+      "status": "running",
+      "startTime": "2026-06-13T00:10:03.922Z",
+      "tags": [
+        "production",
+        "batch",
+        "i18n",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_7395",
+        "sessionId": "sess_dur3",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 428,
+      "totalCostUsd": 0.0006,
+      "spans": [
+        {
+          "id": "trace_g0081_s0",
+          "parentId": null,
+          "name": "TranslationBatchExecutor",
+          "type": "chain",
+          "status": "running",
+          "startTime": "2026-06-13T00:10:03.922Z",
+          "input": {
+            "request": "translation_batch"
+          },
+          "output": null
+        },
+        {
+          "id": "trace_g0081_s1",
+          "parentId": "trace_g0081_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "running",
+          "startTime": "2026-06-13T00:10:03.932Z",
+          "input": {
+            "text": "Welcome to your dashboard",
+            "targetLang": "ja"
+          },
+          "output": null,
+          "model": "claude-haiku-4-5",
+          "promptTokens": 342,
+          "completionTokens": 86,
+          "totalTokens": 428,
+          "costUsd": 0.000618
+        }
+      ]
+    },
+    {
+      "id": "trace_g0128",
+      "name": "content_summarizer",
+      "status": "error",
+      "startTime": "2026-06-12T18:31:41.116Z",
+      "tags": [
+        "production",
+        "batch",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_8990",
+        "sessionId": "sess_a0k5",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 2938,
+      "totalCostUsd": 0.0118,
+      "spans": [
+        {
+          "id": "trace_g0128_s0",
+          "parentId": null,
+          "name": "ContentSummarizerExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-12T18:31:41.116Z",
+          "input": {
+            "request": "content_summarizer"
+          },
+          "output": null,
+          "endTime": "2026-06-12T18:31:42.818Z",
+          "latencyMs": 1702,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0128_s1",
+          "parentId": "trace_g0128_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T18:31:41.141Z",
+          "endTime": "2026-06-12T18:31:42.762Z",
+          "latencyMs": 1621,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Summarize the Q2 board notes."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Summary: ..."
+          },
+          "model": "claude-sonnet-4-6",
+          "promptTokens": 2692,
+          "completionTokens": 246,
+          "totalTokens": 2938,
+          "costUsd": 0.011766
+        },
+        {
+          "id": "trace_g0128_s2",
+          "parentId": "trace_g0128_s0",
+          "name": "parse_summary",
+          "type": "parser",
+          "status": "error",
+          "startTime": "2026-06-12T18:31:42.775Z",
+          "endTime": "2026-06-12T18:31:42.802Z",
+          "latencyMs": 27,
+          "input": {
+            "raw": "..."
+          },
+          "output": null,
+          "error": "ToolException: connection refused"
+        }
+      ],
+      "endTime": "2026-06-12T18:31:42.818Z",
+      "latencyMs": 1702
+    },
+    {
+      "id": "trace_g0370",
+      "name": "multi_agent_orchestrator",
+      "status": "success",
+      "startTime": "2026-06-12T09:19:55.540Z",
+      "tags": [
+        "staging",
+        "agents",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_8316",
+        "sessionId": "sess_c7w2",
+        "environment": "staging",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 10172,
+      "totalCostUsd": 0.0343,
+      "spans": [
+        {
+          "id": "trace_g0370_s0",
+          "parentId": null,
+          "name": "MultiAgentOrchestratorExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-12T09:19:55.540Z",
+          "input": {
+            "request": "multi_agent_orchestrator"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-12T09:20:00.806Z",
+          "latencyMs": 5266
+        },
+        {
+          "id": "trace_g0370_s1",
+          "parentId": "trace_g0370_s0",
+          "name": "router",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T09:19:55.559Z",
+          "endTime": "2026-06-12T09:19:56.303Z",
+          "latencyMs": 744,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Dispatch to workers."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Routing to 3 workers."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1268,
+          "completionTokens": 371,
+          "totalTokens": 1639,
+          "costUsd": 0.00688
+        },
+        {
+          "id": "trace_g0370_s2",
+          "parentId": "trace_g0370_s0",
+          "name": "worker_research",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T09:19:56.354Z",
+          "endTime": "2026-06-12T09:19:57.515Z",
+          "latencyMs": 1161,
+          "input": {
+            "task": "research"
+          },
+          "output": {
+            "done": true
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2321,
+          "completionTokens": 255,
+          "totalTokens": 2576,
+          "costUsd": 0.008353
+        },
+        {
+          "id": "trace_g0370_s3",
+          "parentId": "trace_g0370_s0",
+          "name": "worker_draft",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T09:19:56.332Z",
+          "endTime": "2026-06-12T09:19:58.792Z",
+          "latencyMs": 2460,
+          "input": {
+            "task": "draft"
+          },
+          "output": {
+            "done": true
+          },
+          "model": "gpt-4o-mini",
+          "promptTokens": 1345,
+          "completionTokens": 574,
+          "totalTokens": 1919,
+          "costUsd": 0.000546
+        },
+        {
+          "id": "trace_g0370_s4",
+          "parentId": "trace_g0370_s0",
+          "name": "worker_critique",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T09:19:56.347Z",
+          "endTime": "2026-06-12T09:19:58.834Z",
+          "latencyMs": 2487,
+          "input": {
+            "task": "critique"
+          },
+          "output": {
+            "done": true
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2519,
+          "completionTokens": 598,
+          "totalTokens": 3117,
+          "costUsd": 0.012278
+        },
+        {
+          "id": "trace_g0370_s5",
+          "parentId": "trace_g0370_s0",
+          "name": "aggregate",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T09:19:58.844Z",
+          "endTime": "2026-06-12T09:20:00.784Z",
+          "latencyMs": 1940,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Merge worker outputs."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Final answer."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 390,
+          "completionTokens": 531,
+          "totalTokens": 921,
+          "costUsd": 0.006285
+        }
+      ],
+      "endTime": "2026-06-12T09:20:00.806Z",
+      "latencyMs": 5266,
+      "feedback": {
+        "rating": "up",
+        "score": 0.76,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0158",
+      "name": "sql_analyst_agent",
+      "status": "success",
+      "startTime": "2026-06-12T06:38:31.966Z",
+      "tags": [
+        "staging",
+        "analytics",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_8280",
+        "sessionId": "sess_9w9t",
+        "environment": "staging",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 5612,
+      "totalCostUsd": 0.0186,
+      "spans": [
+        {
+          "id": "trace_g0158_s0",
+          "parentId": null,
+          "name": "SqlAnalystAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-12T06:38:31.966Z",
+          "input": {
+            "request": "sql_analyst_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-12T06:38:37.246Z",
+          "latencyMs": 5280
+        },
+        {
+          "id": "trace_g0158_s1",
+          "parentId": "trace_g0158_s0",
+          "name": "list_tables",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-12T06:38:31.978Z",
+          "endTime": "2026-06-12T06:38:32.167Z",
+          "latencyMs": 189,
+          "input": {},
+          "output": {
+            "tables": [
+              "orders",
+              "products",
+              "customers"
+            ]
+          }
+        },
+        {
+          "id": "trace_g0158_s2",
+          "parentId": "trace_g0158_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T06:38:32.187Z",
+          "endTime": "2026-06-12T06:38:34.348Z",
+          "latencyMs": 2161,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Average order value this month vs last month"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "```sql\nSELECT ...\n```"
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2094,
+          "completionTokens": 262,
+          "totalTokens": 2356,
+          "costUsd": 0.007855
+        },
+        {
+          "id": "trace_g0158_s3",
+          "parentId": "trace_g0158_s0",
+          "name": "run_sql_query",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-12T06:38:34.371Z",
+          "endTime": "2026-06-12T06:38:35.954Z",
+          "latencyMs": 1583,
+          "input": {
+            "query": "SELECT ..."
+          },
+          "output": {
+            "rows": 41
+          }
+        },
+        {
+          "id": "trace_g0158_s4",
+          "parentId": "trace_g0158_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-12T06:38:35.977Z",
+          "endTime": "2026-06-12T06:38:37.218Z",
+          "latencyMs": 1241,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "rows returned"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Here are the results ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2912,
+          "completionTokens": 344,
+          "totalTokens": 3256,
+          "costUsd": 0.01072
+        }
+      ],
+      "endTime": "2026-06-12T06:38:37.246Z",
+      "latencyMs": 5280
+    },
+    {
+      "id": "trace_g0098",
+      "name": "rag_doc_qa",
+      "status": "success",
+      "startTime": "2026-06-11T23:17:23.048Z",
+      "tags": [
+        "staging",
+        "rag",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_3245",
+        "sessionId": "sess_hlxe",
+        "environment": "staging",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 4264,
+      "totalCostUsd": 0.0095,
+      "spans": [
+        {
+          "id": "trace_g0098_s0",
+          "parentId": null,
+          "name": "RagDocQaExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-11T23:17:23.048Z",
+          "input": {
+            "request": "rag_doc_qa"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-11T23:17:26.071Z",
+          "latencyMs": 3023
+        },
+        {
+          "id": "trace_g0098_s1",
+          "parentId": "trace_g0098_s0",
+          "name": "embed_query",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T23:17:23.078Z",
+          "input": {
+            "text": "How does the refund process work for annual plans?"
+          },
+          "output": {
+            "dimensions": 1536
+          },
+          "model": "text-embedding-3-small",
+          "promptTokens": 1168,
+          "completionTokens": 0,
+          "totalTokens": 1168,
+          "costUsd": 0.000023
+        },
+        {
+          "id": "trace_g0098_s2",
+          "parentId": "trace_g0098_s0",
+          "name": "pinecone_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-11T23:17:23.282Z",
+          "endTime": "2026-06-11T23:17:23.998Z",
+          "latencyMs": 716,
+          "input": {
+            "topK": 5,
+            "namespace": "policies"
+          },
+          "output": {
+            "documents": [
+              {
+                "id": "doc_1",
+                "score": 0.9
+              }
+            ]
+          }
+        },
+        {
+          "id": "trace_g0098_s3",
+          "parentId": "trace_g0098_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T23:17:24.024Z",
+          "endTime": "2026-06-11T23:17:26.054Z",
+          "latencyMs": 2030,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "How does the refund process work for annual plans?"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Based on the policy, the answer is ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2864,
+          "completionTokens": 232,
+          "totalTokens": 3096,
+          "costUsd": 0.00948
+        }
+      ],
+      "endTime": "2026-06-11T23:17:26.071Z",
+      "latencyMs": 3023
+    },
+    {
+      "id": "trace_g0257",
+      "name": "image_caption_pipeline",
+      "status": "success",
+      "startTime": "2026-06-11T18:54:09.769Z",
+      "tags": [
+        "production",
+        "vision",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_2986",
+        "sessionId": "sess_9b4j",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 2294,
+      "totalCostUsd": 0.0071,
+      "spans": [
+        {
+          "id": "trace_g0257_s0",
+          "parentId": null,
+          "name": "ImageCaptionPipelineExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-11T18:54:09.769Z",
+          "input": {
+            "request": "image_caption_pipeline"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-11T18:54:12.659Z",
+          "latencyMs": 2890
+        },
+        {
+          "id": "trace_g0257_s1",
+          "parentId": "trace_g0257_s0",
+          "name": "download_image",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-11T18:54:09.780Z",
+          "endTime": "2026-06-11T18:54:10.687Z",
+          "latencyMs": 907,
+          "input": {
+            "url": "https://cdn.acme.com/img.jpg"
+          },
+          "output": {
+            "bytes": 374847
+          }
+        },
+        {
+          "id": "trace_g0257_s2",
+          "parentId": "trace_g0257_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T18:54:10.716Z",
+          "endTime": "2026-06-11T18:54:12.648Z",
+          "latencyMs": 1932,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "[image] Caption this."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "A photo of ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2107,
+          "completionTokens": 187,
+          "totalTokens": 2294,
+          "costUsd": 0.007137
+        }
+      ],
+      "endTime": "2026-06-11T18:54:12.659Z",
+      "latencyMs": 2890,
+      "feedback": {
+        "rating": "up",
+        "score": 0.48,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0180",
+      "name": "code_review_agent",
+      "status": "success",
+      "startTime": "2026-06-11T15:52:26.207Z",
+      "tags": [
+        "staging",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_8092",
+        "sessionId": "sess_5i2v",
+        "environment": "staging",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 4289,
+      "totalCostUsd": 0.014,
+      "spans": [
+        {
+          "id": "trace_g0180_s0",
+          "parentId": null,
+          "name": "CodeReviewAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-11T15:52:26.207Z",
+          "input": {
+            "request": "code_review_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-11T15:52:31.311Z",
+          "latencyMs": 5104
+        },
+        {
+          "id": "trace_g0180_s1",
+          "parentId": "trace_g0180_s0",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-11T15:52:26.229Z",
+          "endTime": "2026-06-11T15:52:27.095Z",
+          "latencyMs": 866,
+          "input": {
+            "pr": 747
+          },
+          "output": {
+            "files": 16
+          }
+        },
+        {
+          "id": "trace_g0180_s2",
+          "parentId": "trace_g0180_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T15:52:27.101Z",
+          "endTime": "2026-06-11T15:52:29.425Z",
+          "latencyMs": 2324,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found N issues ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1725,
+          "completionTokens": 71,
+          "totalTokens": 1796,
+          "costUsd": 0.005023
+        },
+        {
+          "id": "trace_g0180_s3",
+          "parentId": "trace_g0180_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T15:52:29.447Z",
+          "endTime": "2026-06-11T15:52:31.283Z",
+          "latencyMs": 1836,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Format as comments."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "- comment ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2126,
+          "completionTokens": 367,
+          "totalTokens": 2493,
+          "costUsd": 0.008985
+        }
+      ],
+      "endTime": "2026-06-11T15:52:31.311Z",
+      "latencyMs": 5104
+    },
+    {
+      "id": "trace_g0011",
+      "name": "customer_support_agent",
+      "status": "success",
+      "startTime": "2026-06-11T13:59:48.426Z",
+      "tags": [
+        "production",
+        "support",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_7666",
+        "sessionId": "sess_epia",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 2302,
+      "totalCostUsd": 0.0081,
+      "spans": [
+        {
+          "id": "trace_g0011_s0",
+          "parentId": null,
+          "name": "CustomerSupportAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-11T13:59:48.426Z",
+          "input": {
+            "request": "customer_support_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-11T13:59:52.328Z",
+          "latencyMs": 3902
+        },
+        {
+          "id": "trace_g0011_s1",
+          "parentId": "trace_g0011_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T13:59:48.456Z",
+          "endTime": "2026-06-11T13:59:49.811Z",
+          "latencyMs": 1355,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "I want to cancel my subscription and get a refund."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "name": "lookup_account"
+              }
+            ]
+          },
+          "model": "gpt-4o",
+          "promptTokens": 644,
+          "completionTokens": 202,
+          "totalTokens": 846,
+          "costUsd": 0.00363
+        },
+        {
+          "id": "trace_g0011_s2",
+          "parentId": "trace_g0011_s0",
+          "name": "lookup_charges",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-11T13:59:49.817Z",
+          "endTime": "2026-06-11T13:59:50.353Z",
+          "latencyMs": 536,
+          "input": {
+            "query": "I want to cancel my subs"
+          },
+          "output": {
+            "found": true
+          }
+        },
+        {
+          "id": "trace_g0011_s3",
+          "parentId": "trace_g0011_s0",
+          "name": "issue_refund",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-11T13:59:50.366Z",
+          "endTime": "2026-06-11T13:59:51.410Z",
+          "latencyMs": 1044,
+          "input": {},
+          "output": {
+            "status": "ok"
+          }
+        },
+        {
+          "id": "trace_g0011_s4",
+          "parentId": "trace_g0011_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T13:59:51.423Z",
+          "endTime": "2026-06-11T13:59:52.307Z",
+          "latencyMs": 884,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "{...}"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Done — I've handled that for you."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1342,
+          "completionTokens": 114,
+          "totalTokens": 1456,
+          "costUsd": 0.004495
+        }
+      ],
+      "endTime": "2026-06-11T13:59:52.328Z",
+      "latencyMs": 3902,
+      "feedback": {
+        "rating": "up",
+        "score": 0.36,
+        "comment": "Great answer"
+      }
+    },
+    {
+      "id": "trace_g0025",
+      "name": "content_summarizer",
+      "status": "success",
+      "startTime": "2026-06-11T09:11:57.121Z",
+      "tags": [
+        "staging",
+        "batch",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_6153",
+        "sessionId": "sess_24qs",
+        "environment": "staging",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 1789,
+      "totalCostUsd": 0.0104,
+      "spans": [
+        {
+          "id": "trace_g0025_s0",
+          "parentId": null,
+          "name": "ContentSummarizerExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-11T09:11:57.121Z",
+          "input": {
+            "request": "content_summarizer"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-11T09:11:58.807Z",
+          "latencyMs": 1686
+        },
+        {
+          "id": "trace_g0025_s1",
+          "parentId": "trace_g0025_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T09:11:57.129Z",
+          "endTime": "2026-06-11T09:11:58.769Z",
+          "latencyMs": 1640,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Summarize the Q2 board notes."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Summary: ..."
+          },
+          "model": "claude-sonnet-4-6",
+          "promptTokens": 1372,
+          "completionTokens": 417,
+          "totalTokens": 1789,
+          "costUsd": 0.010371
+        },
+        {
+          "id": "trace_g0025_s2",
+          "parentId": "trace_g0025_s0",
+          "name": "parse_summary",
+          "type": "parser",
+          "status": "success",
+          "startTime": "2026-06-11T09:11:58.778Z",
+          "endTime": "2026-06-11T09:11:58.789Z",
+          "latencyMs": 11,
+          "input": {
+            "raw": "..."
+          },
+          "output": {
+            "summary": "..."
+          }
+        }
+      ],
+      "endTime": "2026-06-11T09:11:58.807Z",
+      "latencyMs": 1686,
+      "feedback": {
+        "rating": "up",
+        "score": 0.03,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0145",
+      "name": "rag_doc_qa",
+      "status": "success",
+      "startTime": "2026-06-11T07:01:14.794Z",
+      "tags": [
+        "staging",
+        "rag",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_3552",
+        "sessionId": "sess_7tz7",
+        "environment": "staging",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 2268,
+      "totalCostUsd": 0.0069,
+      "spans": [
+        {
+          "id": "trace_g0145_s0",
+          "parentId": null,
+          "name": "RagDocQaExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-11T07:01:14.794Z",
+          "input": {
+            "request": "rag_doc_qa"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-11T07:01:16.420Z",
+          "latencyMs": 1626
+        },
+        {
+          "id": "trace_g0145_s1",
+          "parentId": "trace_g0145_s0",
+          "name": "embed_query",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T07:01:14.809Z",
+          "endTime": "2026-06-11T07:01:14.922Z",
+          "latencyMs": 113,
+          "input": {
+            "text": "What's the SLA for enterprise customers?"
+          },
+          "output": {
+            "dimensions": 1536
+          },
+          "model": "text-embedding-3-small",
+          "promptTokens": 487,
+          "completionTokens": 0,
+          "totalTokens": 487,
+          "costUsd": 0.00001
+        },
+        {
+          "id": "trace_g0145_s2",
+          "parentId": "trace_g0145_s0",
+          "name": "pinecone_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-11T07:01:14.935Z",
+          "endTime": "2026-06-11T07:01:15.458Z",
+          "latencyMs": 523,
+          "input": {
+            "topK": 5,
+            "namespace": "policies"
+          },
+          "output": {
+            "documents": [
+              {
+                "id": "doc_1",
+                "score": 0.9
+              }
+            ]
+          }
+        },
+        {
+          "id": "trace_g0145_s3",
+          "parentId": "trace_g0145_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T07:01:15.481Z",
+          "endTime": "2026-06-11T07:01:16.410Z",
+          "latencyMs": 929,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "What's the SLA for enterprise customers?"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Based on the policy, the answer is ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1451,
+          "completionTokens": 330,
+          "totalTokens": 1781,
+          "costUsd": 0.006927
+        }
+      ],
+      "endTime": "2026-06-11T07:01:16.420Z",
+      "latencyMs": 1626,
+      "feedback": {
+        "rating": "up",
+        "score": 0.37,
+        "comment": "Too slow"
+      }
+    },
+    {
+      "id": "trace_g0347",
+      "name": "code_review_agent",
+      "status": "error",
+      "startTime": "2026-06-11T03:00:58.892Z",
+      "tags": [
+        "staging",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6525",
+        "sessionId": "sess_c44u",
+        "environment": "staging",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 5253,
+      "totalCostUsd": 0.0167,
+      "spans": [
+        {
+          "id": "trace_g0347_s0",
+          "parentId": null,
+          "name": "CodeReviewAgentExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-11T03:00:58.892Z",
+          "input": {
+            "request": "code_review_agent"
+          },
+          "output": null,
+          "endTime": "2026-06-11T03:01:04.065Z",
+          "latencyMs": 5173,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0347_s1",
+          "parentId": "trace_g0347_s0",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-11T03:00:58.913Z",
+          "endTime": "2026-06-11T03:00:59.622Z",
+          "latencyMs": 709,
+          "input": {
+            "pr": 886
+          },
+          "output": {
+            "files": 17
+          }
+        },
+        {
+          "id": "trace_g0347_s2",
+          "parentId": "trace_g0347_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T03:00:59.631Z",
+          "endTime": "2026-06-11T03:01:02.549Z",
+          "latencyMs": 2918,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found N issues ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2485,
+          "completionTokens": 151,
+          "totalTokens": 2636,
+          "costUsd": 0.007722
+        },
+        {
+          "id": "trace_g0347_s3",
+          "parentId": "trace_g0347_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "error",
+          "startTime": "2026-06-11T03:01:02.555Z",
+          "endTime": "2026-06-11T03:01:04.058Z",
+          "latencyMs": 1503,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Format as comments."
+              }
+            ]
+          },
+          "output": null,
+          "model": "gpt-4o",
+          "promptTokens": 2292,
+          "completionTokens": 325,
+          "totalTokens": 2617,
+          "costUsd": 0.00898,
+          "error": "AuthError: 401 invalid api key"
+        }
+      ],
+      "endTime": "2026-06-11T03:01:04.065Z",
+      "latencyMs": 5173,
+      "feedback": {
+        "rating": "up",
+        "score": 0.8,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0085",
+      "name": "rag_doc_qa",
+      "status": "error",
+      "startTime": "2026-06-11T00:13:21.969Z",
+      "tags": [
+        "production",
+        "rag",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_7783",
+        "sessionId": "sess_hkw7",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 855,
+      "totalCostUsd": 0.000017,
+      "spans": [
+        {
+          "id": "trace_g0085_s0",
+          "parentId": null,
+          "name": "RagDocQaExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-11T00:13:21.969Z",
+          "input": {
+            "request": "rag_doc_qa"
+          },
+          "output": null,
+          "endTime": "2026-06-11T00:13:23.033Z",
+          "latencyMs": 1064,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0085_s1",
+          "parentId": "trace_g0085_s0",
+          "name": "embed_query",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T00:13:21.982Z",
+          "endTime": "2026-06-11T00:13:22.312Z",
+          "latencyMs": 330,
+          "input": {
+            "text": "What's the SLA for enterprise customers?"
+          },
+          "output": {
+            "dimensions": 1536
+          },
+          "model": "text-embedding-3-small",
+          "promptTokens": 855,
+          "completionTokens": 0,
+          "totalTokens": 855,
+          "costUsd": 0.000017
+        },
+        {
+          "id": "trace_g0085_s2",
+          "parentId": "trace_g0085_s0",
+          "name": "pinecone_search",
+          "type": "retriever",
+          "status": "error",
+          "startTime": "2026-06-11T00:13:22.322Z",
+          "endTime": "2026-06-11T00:13:23.028Z",
+          "latencyMs": 706,
+          "input": {
+            "topK": 5,
+            "namespace": "policies"
+          },
+          "output": null,
+          "error": "ToolException: connection refused"
+        }
+      ],
+      "endTime": "2026-06-11T00:13:23.033Z",
+      "latencyMs": 1064,
+      "feedback": {
+        "rating": "up",
+        "score": 0.61,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0405",
+      "name": "code_review_agent",
+      "status": "success",
+      "startTime": "2026-06-11T00:11:17.316Z",
+      "tags": [
+        "production",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_2612",
+        "sessionId": "sess_66ab",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 1901,
+      "totalCostUsd": 0.0102,
+      "spans": [
+        {
+          "id": "trace_g0405_s0",
+          "parentId": null,
+          "name": "CodeReviewAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-11T00:11:17.316Z",
+          "input": {
+            "request": "code_review_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-11T00:11:22.645Z",
+          "latencyMs": 5329
+        },
+        {
+          "id": "trace_g0405_s1",
+          "parentId": "trace_g0405_s0",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-11T00:11:17.341Z",
+          "endTime": "2026-06-11T00:11:17.738Z",
+          "latencyMs": 397,
+          "input": {
+            "pr": 144
+          },
+          "output": {
+            "files": 11
+          }
+        },
+        {
+          "id": "trace_g0405_s2",
+          "parentId": "trace_g0405_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T00:11:17.756Z",
+          "endTime": "2026-06-11T00:11:20.628Z",
+          "latencyMs": 2872,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found N issues ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 840,
+          "completionTokens": 472,
+          "totalTokens": 1312,
+          "costUsd": 0.00682
+        },
+        {
+          "id": "trace_g0405_s3",
+          "parentId": "trace_g0405_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-11T00:11:20.653Z",
+          "endTime": "2026-06-11T00:11:22.618Z",
+          "latencyMs": 1965,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Format as comments."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "- comment ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 338,
+          "completionTokens": 251,
+          "totalTokens": 589,
+          "costUsd": 0.003355
+        }
+      ],
+      "endTime": "2026-06-11T00:11:22.645Z",
+      "latencyMs": 5329,
+      "feedback": {
+        "rating": "up",
+        "score": 0.35,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0460",
+      "name": "image_caption_pipeline",
+      "status": "success",
+      "startTime": "2026-06-10T20:18:46.389Z",
+      "tags": [
+        "production",
+        "vision",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_2510",
+        "sessionId": "sess_wop",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 2597,
+      "totalCostUsd": 0.0101,
+      "spans": [
+        {
+          "id": "trace_g0460_s0",
+          "parentId": null,
+          "name": "ImageCaptionPipelineExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-10T20:18:46.389Z",
+          "input": {
+            "request": "image_caption_pipeline"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-10T20:18:49.069Z",
+          "latencyMs": 2680
+        },
+        {
+          "id": "trace_g0460_s1",
+          "parentId": "trace_g0460_s0",
+          "name": "download_image",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-10T20:18:46.419Z",
+          "endTime": "2026-06-10T20:18:47.214Z",
+          "latencyMs": 795,
+          "input": {
+            "url": "https://cdn.acme.com/img.jpg"
+          },
+          "output": {
+            "bytes": 136055
+          }
+        },
+        {
+          "id": "trace_g0460_s2",
+          "parentId": "trace_g0460_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T20:18:47.236Z",
+          "endTime": "2026-06-10T20:18:49.060Z",
+          "latencyMs": 1824,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "[image] Caption this."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "A photo of ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2121,
+          "completionTokens": 476,
+          "totalTokens": 2597,
+          "costUsd": 0.010063
+        }
+      ],
+      "endTime": "2026-06-10T20:18:49.069Z",
+      "latencyMs": 2680,
+      "feedback": {
+        "rating": "up",
+        "score": 0.56,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0041",
+      "name": "parallel_research_agent",
+      "status": "success",
+      "startTime": "2026-06-10T18:44:04.508Z",
+      "tags": [
+        "production",
+        "research",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6749",
+        "sessionId": "sess_di0u",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 1093,
+      "totalCostUsd": 0.0057,
+      "spans": [
+        {
+          "id": "trace_g0041_s0",
+          "parentId": null,
+          "name": "ParallelResearchAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-10T18:44:04.508Z",
+          "input": {
+            "request": "parallel_research_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-10T18:44:07.990Z",
+          "latencyMs": 3482
+        },
+        {
+          "id": "trace_g0041_s1",
+          "parentId": "trace_g0041_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T18:44:04.521Z",
+          "endTime": "2026-06-10T18:44:05.170Z",
+          "latencyMs": 649,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Research: competitive landscape for LLM observability tools"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Plan: search web, arxiv, news in parallel."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 351,
+          "completionTokens": 47,
+          "totalTokens": 398,
+          "costUsd": 0.001347
+        },
+        {
+          "id": "trace_g0041_s2",
+          "parentId": "trace_g0041_s0",
+          "name": "web_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T18:44:05.211Z",
+          "endTime": "2026-06-10T18:44:05.756Z",
+          "latencyMs": 545,
+          "input": {
+            "q": "competitive landscape for LLM observability tools"
+          },
+          "output": {
+            "hits": 12
+          }
+        },
+        {
+          "id": "trace_g0041_s3",
+          "parentId": "trace_g0041_s0",
+          "name": "arxiv_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T18:44:05.200Z",
+          "endTime": "2026-06-10T18:44:06.556Z",
+          "latencyMs": 1356,
+          "input": {
+            "q": "competitive landscape for LLM observability tools"
+          },
+          "output": {
+            "hits": 3
+          }
+        },
+        {
+          "id": "trace_g0041_s4",
+          "parentId": "trace_g0041_s0",
+          "name": "news_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T18:44:05.184Z",
+          "endTime": "2026-06-10T18:44:06.432Z",
+          "latencyMs": 1248,
+          "input": {
+            "q": "competitive landscape for LLM observability tools"
+          },
+          "output": {
+            "hits": 9
+          }
+        },
+        {
+          "id": "trace_g0041_s5",
+          "parentId": "trace_g0041_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T18:44:06.576Z",
+          "endTime": "2026-06-10T18:44:07.980Z",
+          "latencyMs": 1404,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Synthesize the findings."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Synthesis: ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 349,
+          "completionTokens": 346,
+          "totalTokens": 695,
+          "costUsd": 0.004332
+        }
+      ],
+      "endTime": "2026-06-10T18:44:07.990Z",
+      "latencyMs": 3482,
+      "feedback": {
+        "rating": "up",
+        "score": 0.87,
+        "comment": "Great answer"
+      }
+    },
+    {
+      "id": "trace_g0447",
+      "name": "image_caption_pipeline",
+      "status": "success",
+      "startTime": "2026-06-10T17:09:57.012Z",
+      "tags": [
+        "production",
+        "vision",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_4468",
+        "sessionId": "sess_7cbw",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 1050,
+      "totalCostUsd": 0.0056,
+      "spans": [
+        {
+          "id": "trace_g0447_s0",
+          "parentId": null,
+          "name": "ImageCaptionPipelineExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-10T17:09:57.012Z",
+          "input": {
+            "request": "image_caption_pipeline"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-10T17:09:59.992Z",
+          "latencyMs": 2980
+        },
+        {
+          "id": "trace_g0447_s1",
+          "parentId": "trace_g0447_s0",
+          "name": "download_image",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-10T17:09:57.035Z",
+          "endTime": "2026-06-10T17:09:58.108Z",
+          "latencyMs": 1073,
+          "input": {
+            "url": "https://cdn.acme.com/img.jpg"
+          },
+          "output": {
+            "bytes": 68980
+          }
+        },
+        {
+          "id": "trace_g0447_s2",
+          "parentId": "trace_g0447_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T17:09:58.137Z",
+          "endTime": "2026-06-10T17:09:59.970Z",
+          "latencyMs": 1833,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "[image] Caption this."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "A photo of ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 653,
+          "completionTokens": 397,
+          "totalTokens": 1050,
+          "costUsd": 0.005602
+        }
+      ],
+      "endTime": "2026-06-10T17:09:59.992Z",
+      "latencyMs": 2980
+    },
+    {
+      "id": "trace_g0204",
+      "name": "parallel_research_agent",
+      "status": "success",
+      "startTime": "2026-06-10T17:07:55.448Z",
+      "tags": [
+        "production",
+        "research",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_5298",
+        "sessionId": "sess_g91t",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 5184,
+      "totalCostUsd": 0.0178,
+      "spans": [
+        {
+          "id": "trace_g0204_s0",
+          "parentId": null,
+          "name": "ParallelResearchAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-10T17:07:55.448Z",
+          "input": {
+            "request": "parallel_research_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-10T17:08:00.258Z",
+          "latencyMs": 4810
+        },
+        {
+          "id": "trace_g0204_s1",
+          "parentId": "trace_g0204_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T17:07:55.472Z",
+          "endTime": "2026-06-10T17:07:56.120Z",
+          "latencyMs": 648,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Research: impact of LLMs on developer productivity"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Plan: search web, arxiv, news in parallel."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2846,
+          "completionTokens": 436,
+          "totalTokens": 3282,
+          "costUsd": 0.011475
+        },
+        {
+          "id": "trace_g0204_s2",
+          "parentId": "trace_g0204_s0",
+          "name": "web_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T17:07:56.188Z",
+          "endTime": "2026-06-10T17:07:56.605Z",
+          "latencyMs": 417,
+          "input": {
+            "q": "impact of LLMs on developer productivity"
+          },
+          "output": {
+            "hits": 11
+          }
+        },
+        {
+          "id": "trace_g0204_s3",
+          "parentId": "trace_g0204_s0",
+          "name": "arxiv_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T17:07:56.188Z",
+          "endTime": "2026-06-10T17:07:57.523Z",
+          "latencyMs": 1335,
+          "input": {
+            "q": "impact of LLMs on developer productivity"
+          },
+          "output": {
+            "hits": 3
+          }
+        },
+        {
+          "id": "trace_g0204_s4",
+          "parentId": "trace_g0204_s0",
+          "name": "news_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T17:07:56.183Z",
+          "endTime": "2026-06-10T17:07:57.401Z",
+          "latencyMs": 1218,
+          "input": {
+            "q": "impact of LLMs on developer productivity"
+          },
+          "output": {
+            "hits": 6
+          }
+        },
+        {
+          "id": "trace_g0204_s5",
+          "parentId": "trace_g0204_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T17:07:57.534Z",
+          "endTime": "2026-06-10T17:08:00.249Z",
+          "latencyMs": 2715,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Synthesize the findings."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Synthesis: ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1689,
+          "completionTokens": 213,
+          "totalTokens": 1902,
+          "costUsd": 0.006352
+        }
+      ],
+      "endTime": "2026-06-10T17:08:00.258Z",
+      "latencyMs": 4810,
+      "feedback": {
+        "rating": "up",
+        "score": 0.08,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0108",
+      "name": "sql_analyst_agent",
+      "status": "error",
+      "startTime": "2026-06-10T16:27:03.477Z",
+      "tags": [
+        "production",
+        "analytics",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6829",
+        "sessionId": "sess_1psa",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 4309,
+      "totalCostUsd": 0.0146,
+      "spans": [
+        {
+          "id": "trace_g0108_s0",
+          "parentId": null,
+          "name": "SqlAnalystAgentExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-10T16:27:03.477Z",
+          "input": {
+            "request": "sql_analyst_agent"
+          },
+          "output": null,
+          "endTime": "2026-06-10T16:27:11.339Z",
+          "latencyMs": 7862,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0108_s1",
+          "parentId": "trace_g0108_s0",
+          "name": "list_tables",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-10T16:27:03.498Z",
+          "endTime": "2026-06-10T16:27:03.601Z",
+          "latencyMs": 103,
+          "input": {},
+          "output": {
+            "tables": [
+              "orders",
+              "products",
+              "customers"
+            ]
+          }
+        },
+        {
+          "id": "trace_g0108_s2",
+          "parentId": "trace_g0108_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T16:27:03.615Z",
+          "endTime": "2026-06-10T16:27:06.033Z",
+          "latencyMs": 2418,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Top 5 products by revenue last quarter"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "```sql\nSELECT ...\n```"
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2625,
+          "completionTokens": 443,
+          "totalTokens": 3068,
+          "costUsd": 0.010993
+        },
+        {
+          "id": "trace_g0108_s3",
+          "parentId": "trace_g0108_s0",
+          "name": "run_sql_query",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-10T16:27:06.042Z",
+          "endTime": "2026-06-10T16:27:08.420Z",
+          "latencyMs": 2378,
+          "input": {
+            "query": "SELECT ..."
+          },
+          "output": {
+            "rows": 47
+          }
+        },
+        {
+          "id": "trace_g0108_s4",
+          "parentId": "trace_g0108_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "error",
+          "startTime": "2026-06-10T16:27:08.439Z",
+          "endTime": "2026-06-10T16:27:11.325Z",
+          "latencyMs": 2886,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "rows returned"
+              }
+            ]
+          },
+          "output": null,
+          "model": "gpt-4o",
+          "promptTokens": 1174,
+          "completionTokens": 67,
+          "totalTokens": 1241,
+          "costUsd": 0.003605,
+          "error": "AuthError: 401 invalid api key"
+        }
+      ],
+      "endTime": "2026-06-10T16:27:11.339Z",
+      "latencyMs": 7862,
+      "feedback": {
+        "rating": "up",
+        "score": 0.68,
+        "comment": "Wrong tool used"
+      }
+    },
+    {
+      "id": "trace_g0042",
+      "name": "rag_doc_qa",
+      "status": "success",
+      "startTime": "2026-06-10T09:10:21.112Z",
+      "tags": [
+        "production",
+        "rag",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6985",
+        "sessionId": "sess_kn6l",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 4557,
+      "totalCostUsd": 0.0067,
+      "spans": [
+        {
+          "id": "trace_g0042_s0",
+          "parentId": null,
+          "name": "RagDocQaExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-10T09:10:21.112Z",
+          "input": {
+            "request": "rag_doc_qa"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-10T09:10:23.868Z",
+          "latencyMs": 2756
+        },
+        {
+          "id": "trace_g0042_s1",
+          "parentId": "span_does_not_exist",
+          "name": "embed_query",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T09:10:21.137Z",
+          "endTime": "2026-06-10T09:10:21.446Z",
+          "latencyMs": 309,
+          "input": {
+            "text": "How does the refund process work for annual plans?"
+          },
+          "output": {
+            "dimensions": 1536
+          },
+          "model": "text-embedding-3-small",
+          "promptTokens": 2141,
+          "completionTokens": 0,
+          "totalTokens": 2141,
+          "costUsd": 0.000043
+        },
+        {
+          "id": "trace_g0042_s2",
+          "parentId": "trace_g0042_s0",
+          "name": "pinecone_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T09:10:21.463Z",
+          "endTime": "2026-06-10T09:10:21.707Z",
+          "latencyMs": 244,
+          "input": {
+            "topK": 5,
+            "namespace": "policies"
+          },
+          "output": {
+            "documents": [
+              {
+                "id": "doc_1",
+                "score": 0.9
+              }
+            ]
+          }
+        },
+        {
+          "id": "trace_g0042_s3",
+          "parentId": "trace_g0042_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T09:10:21.729Z",
+          "endTime": "2026-06-10T09:10:23.845Z",
+          "latencyMs": 2116,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "How does the refund process work for annual plans?"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Based on the policy, the answer is ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2336,
+          "completionTokens": 80,
+          "totalTokens": 2416,
+          "costUsd": 0.00664
+        }
+      ],
+      "endTime": "2026-06-10T09:10:23.868Z",
+      "latencyMs": 2756,
+      "feedback": {
+        "rating": "up",
+        "score": 0.79,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0115",
+      "name": "rag_doc_qa",
+      "status": "success",
+      "startTime": "2026-06-10T08:00:11.056Z",
+      "tags": [
+        "staging",
+        "rag",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_8640",
+        "sessionId": "sess_1ln",
+        "environment": "staging",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 2994,
+      "totalCostUsd": 0.0067,
+      "spans": [
+        {
+          "id": "trace_g0115_s0",
+          "parentId": null,
+          "name": "RagDocQaExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-10T08:00:11.056Z",
+          "input": {
+            "request": "rag_doc_qa"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-10T08:00:13.912Z",
+          "latencyMs": 2856
+        },
+        {
+          "id": "trace_g0115_s1",
+          "parentId": "trace_g0115_s0",
+          "name": "embed_query",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T08:00:11.082Z",
+          "endTime": "2026-06-10T08:00:11.348Z",
+          "latencyMs": 266,
+          "input": {
+            "text": "Which regions is data residency supported in?"
+          },
+          "output": {
+            "dimensions": 1536
+          },
+          "model": "text-embedding-3-small",
+          "promptTokens": 1596,
+          "completionTokens": 0,
+          "totalTokens": 1596,
+          "costUsd": 0.000032
+        },
+        {
+          "id": "trace_g0115_s2",
+          "parentId": "trace_g0115_s0",
+          "name": "pinecone_search",
+          "type": "retriever",
+          "status": "success",
+          "startTime": "2026-06-10T08:00:11.364Z",
+          "endTime": "2026-06-10T08:00:12.182Z",
+          "latencyMs": 818,
+          "input": {
+            "topK": 5,
+            "namespace": "policies"
+          },
+          "output": {
+            "documents": [
+              {
+                "id": "doc_1",
+                "score": 0.9
+              }
+            ]
+          }
+        },
+        {
+          "id": "trace_g0115_s3",
+          "parentId": "trace_g0115_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T08:00:12.207Z",
+          "endTime": "2026-06-10T08:00:13.895Z",
+          "latencyMs": 1688,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Which regions is data residency supported in?"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Based on the policy, the answer is ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 980,
+          "completionTokens": 418,
+          "totalTokens": 1398,
+          "costUsd": 0.00663
+        }
+      ],
+      "endTime": "2026-06-10T08:00:13.912Z",
+      "latencyMs": 2856,
+      "feedback": {
+        "rating": "up",
+        "score": 0.68,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0462",
+      "name": "customer_support_agent",
+      "status": "error",
+      "startTime": "2026-06-10T06:03:37.257Z",
+      "tags": [
+        "production",
+        "support",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6313",
+        "sessionId": "sess_ko8y",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 1478,
+      "totalCostUsd": 0.0079,
+      "spans": [
+        {
+          "id": "trace_g0462_s0",
+          "parentId": null,
+          "name": "CustomerSupportAgentExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-10T06:03:37.257Z",
+          "input": {
+            "request": "customer_support_agent"
+          },
+          "output": null,
+          "endTime": "2026-06-10T06:03:40.515Z",
+          "latencyMs": 3258,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0462_s1",
+          "parentId": "trace_g0462_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-10T06:03:37.263Z",
+          "endTime": "2026-06-10T06:03:39.282Z",
+          "latencyMs": 2019,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "I was charged twice for my subscription this month."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "name": "lookup_account"
+              }
+            ]
+          },
+          "model": "gpt-4o",
+          "promptTokens": 372,
+          "completionTokens": 190,
+          "totalTokens": 562,
+          "costUsd": 0.00283
+        },
+        {
+          "id": "trace_g0462_s2",
+          "parentId": "trace_g0462_s0",
+          "name": "lookup_account",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-10T06:03:39.292Z",
+          "endTime": "2026-06-10T06:03:39.516Z",
+          "latencyMs": 224,
+          "input": {
+            "query": "I was charged twice for "
+          },
+          "output": {
+            "found": true
+          }
+        },
+        {
+          "id": "trace_g0462_s3",
+          "parentId": "trace_g0462_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "error",
+          "startTime": "2026-06-10T06:03:39.535Z",
+          "endTime": "2026-06-10T06:03:40.497Z",
+          "latencyMs": 962,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "{...}"
+              }
+            ]
+          },
+          "output": null,
+          "model": "gpt-4o",
+          "promptTokens": 541,
+          "completionTokens": 375,
+          "totalTokens": 916,
+          "costUsd": 0.005102,
+          "error": "ToolException: connection refused"
+        }
+      ],
+      "endTime": "2026-06-10T06:03:40.515Z",
+      "latencyMs": 3258,
+      "feedback": {
+        "rating": "up",
+        "score": 0.55,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0399",
+      "name": "content_summarizer",
+      "status": "error",
+      "startTime": "2026-06-09T22:20:31.728Z",
+      "tags": [
+        "production",
+        "batch",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_6540",
+        "sessionId": "sess_2qm4",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 2193,
+      "totalCostUsd": 0.0121,
+      "spans": [
+        {
+          "id": "trace_g0399_s0",
+          "parentId": null,
+          "name": "ContentSummarizerExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-09T22:20:31.728Z",
+          "input": {
+            "request": "content_summarizer"
+          },
+          "output": null,
+          "endTime": "2026-06-09T22:20:32.778Z",
+          "latencyMs": 1050,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0399_s1",
+          "parentId": "trace_g0399_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T22:20:31.734Z",
+          "endTime": "2026-06-09T22:20:32.724Z",
+          "latencyMs": 990,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Summarize the launch plan."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Summary: ..."
+          },
+          "model": "claude-sonnet-4-6",
+          "promptTokens": 1731,
+          "completionTokens": 462,
+          "totalTokens": 2193,
+          "costUsd": 0.012123
+        },
+        {
+          "id": "trace_g0399_s2",
+          "parentId": "trace_g0399_s0",
+          "name": "parse_summary",
+          "type": "parser",
+          "status": "error",
+          "startTime": "2026-06-09T22:20:32.735Z",
+          "endTime": "2026-06-09T22:20:32.768Z",
+          "latencyMs": 33,
+          "input": {
+            "raw": "..."
+          },
+          "output": null,
+          "error": "ValidationError: model returned malformed JSON"
+        }
+      ],
+      "endTime": "2026-06-09T22:20:32.778Z",
+      "latencyMs": 1050,
+      "feedback": {
+        "rating": "up",
+        "score": 0.9,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0319",
+      "name": "translation_batch",
+      "status": "success",
+      "startTime": "2026-06-09T21:12:06.848Z",
+      "tags": [
+        "staging",
+        "batch",
+        "i18n",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_1282",
+        "sessionId": "sess_vv2",
+        "environment": "staging",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 2283,
+      "totalCostUsd": 0.0035,
+      "spans": [
+        {
+          "id": "trace_g0319_s0",
+          "parentId": null,
+          "name": "TranslationBatchExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-09T21:12:06.848Z",
+          "input": {
+            "request": "translation_batch"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-09T21:12:07.434Z",
+          "latencyMs": 586
+        },
+        {
+          "id": "trace_g0319_s1",
+          "parentId": "trace_g0319_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T21:12:06.855Z",
+          "endTime": "2026-06-09T21:12:07.424Z",
+          "latencyMs": 569,
+          "input": {
+            "text": "Welcome to your dashboard",
+            "targetLang": "ja"
+          },
+          "output": {
+            "role": "assistant",
+            "content": "[Japanese] ..."
+          },
+          "model": "claude-haiku-4-5",
+          "promptTokens": 1763,
+          "completionTokens": 520,
+          "totalTokens": 2283,
+          "costUsd": 0.00349
+        }
+      ],
+      "endTime": "2026-06-09T21:12:07.434Z",
+      "latencyMs": 586
+    },
+    {
+      "id": "trace_g0181",
+      "name": "customer_support_agent",
+      "status": "success",
+      "startTime": "2026-06-09T16:23:47.555Z",
+      "tags": [
+        "production",
+        "support",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_8900",
+        "sessionId": "sess_14cv",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 4993,
+      "totalCostUsd": 0.0131,
+      "spans": [
+        {
+          "id": "trace_g0181_s0",
+          "parentId": null,
+          "name": "CustomerSupportAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-09T16:23:47.555Z",
+          "input": {
+            "request": "customer_support_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-09T16:23:51.226Z",
+          "latencyMs": 3671
+        },
+        {
+          "id": "trace_g0181_s1",
+          "parentId": "trace_g0181_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T16:23:47.565Z",
+          "endTime": "2026-06-09T16:23:49.227Z",
+          "latencyMs": 1662,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "I want to cancel my subscription and get a refund."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "name": "lookup_account"
+              }
+            ]
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2633,
+          "completionTokens": 48,
+          "totalTokens": 2681,
+          "costUsd": 0.007063
+        },
+        {
+          "id": "trace_g0181_s2",
+          "parentId": "trace_g0181_s0",
+          "name": "lookup_charges",
+          "type": "guardrail",
+          "status": "success",
+          "startTime": "2026-06-09T16:23:49.255Z",
+          "endTime": "2026-06-09T16:23:49.788Z",
+          "latencyMs": 533,
+          "input": {
+            "query": "I want to cancel my subs"
+          },
+          "output": {
+            "found": true
+          }
+        },
+        {
+          "id": "trace_g0181_s3",
+          "parentId": "trace_g0181_s0",
+          "name": "issue_refund",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-09T16:23:49.806Z",
+          "endTime": "2026-06-09T16:23:50.476Z",
+          "latencyMs": 670,
+          "input": {},
+          "output": {
+            "status": "ok"
+          }
+        },
+        {
+          "id": "trace_g0181_s4",
+          "parentId": "trace_g0181_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T16:23:50.494Z",
+          "endTime": "2026-06-09T16:23:51.220Z",
+          "latencyMs": 726,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "{...}"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Done — I've handled that for you."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2272,
+          "completionTokens": 40,
+          "totalTokens": 2312,
+          "costUsd": 0.00608
+        }
+      ],
+      "endTime": "2026-06-09T16:23:51.226Z",
+      "latencyMs": 3671,
+      "feedback": {
+        "rating": "up",
+        "score": 0.57,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0403",
+      "name": "customer_support_agent",
+      "status": "success",
+      "startTime": "2026-06-09T12:58:45.887Z",
+      "tags": [
+        "staging",
+        "support",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_7218",
+        "sessionId": "sess_l3jd",
+        "environment": "staging",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 4176,
+      "totalCostUsd": 0.0143,
+      "spans": [
+        {
+          "id": "trace_g0403_s0",
+          "parentId": null,
+          "name": "CustomerSupportAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-09T12:58:45.887Z",
+          "input": {
+            "request": "customer_support_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-09T12:58:49.479Z",
+          "latencyMs": 3592
+        },
+        {
+          "id": "trace_g0403_s1",
+          "parentId": "trace_g0403_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T12:58:45.917Z",
+          "endTime": "2026-06-09T12:58:47.728Z",
+          "latencyMs": 1811,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "How do I reset my password?"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": null,
+            "tool_calls": [
+              {
+                "name": "lookup_account"
+              }
+            ]
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2568,
+          "completionTokens": 190,
+          "totalTokens": 2758,
+          "costUsd": 0.00832
+        },
+        {
+          "id": "trace_g0403_s2",
+          "parentId": "trace_g0403_s0",
+          "name": "lookup_order",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-09T12:58:47.738Z",
+          "endTime": "2026-06-09T12:58:48.259Z",
+          "latencyMs": 521,
+          "input": {
+            "query": "How do I reset my passwo"
+          },
+          "output": {
+            "found": true
+          }
+        },
+        {
+          "id": "trace_g0403_s3",
+          "parentId": "trace_g0403_s0",
+          "name": "open_carrier_case",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-09T12:58:48.279Z",
+          "endTime": "2026-06-09T12:58:48.643Z",
+          "latencyMs": 364,
+          "input": {},
+          "output": {
+            "status": "ok"
+          }
+        },
+        {
+          "id": "trace_g0403_s4",
+          "parentId": "trace_g0403_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T12:58:48.666Z",
+          "endTime": "2026-06-09T12:58:49.471Z",
+          "latencyMs": 805,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "{...}"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Done — I've handled that for you."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1098,
+          "completionTokens": 320,
+          "totalTokens": 1418,
+          "costUsd": 0.005945
+        }
+      ],
+      "endTime": "2026-06-09T12:58:49.479Z",
+      "latencyMs": 3592,
+      "feedback": {
+        "rating": "up",
+        "score": 0.78,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0297",
+      "name": "sql_analyst_agent",
+      "status": "success",
+      "startTime": "2026-06-09T10:12:00.405Z",
+      "tags": [
+        "staging",
+        "analytics",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_3029",
+        "sessionId": "sess_k00e",
+        "environment": "staging",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 3995,
+      "totalCostUsd": 0.015,
+      "spans": [
+        {
+          "id": "trace_g0297_s0",
+          "parentId": null,
+          "name": "SqlAnalystAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-09T10:12:00.405Z",
+          "input": {
+            "request": "sql_analyst_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-09T10:12:07.273Z",
+          "latencyMs": 6868
+        },
+        {
+          "id": "trace_g0297_s1",
+          "parentId": "trace_g0297_s0",
+          "name": "list_tables",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-09T10:12:00.422Z",
+          "endTime": "2026-06-09T10:12:00.518Z",
+          "latencyMs": 96,
+          "input": {},
+          "output": {
+            "tables": [
+              "orders",
+              "products",
+              "customers"
+            ]
+          }
+        },
+        {
+          "id": "trace_g0297_s2",
+          "parentId": "trace_g0297_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T10:12:00.543Z",
+          "endTime": "2026-06-09T10:12:03.253Z",
+          "latencyMs": 2710,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Top 5 products by revenue last quarter"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "```sql\nSELECT ...\n```"
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2782,
+          "completionTokens": 257,
+          "totalTokens": 3039,
+          "costUsd": 0.009525
+        },
+        {
+          "id": "trace_g0297_s3",
+          "parentId": "trace_g0297_s0",
+          "name": "run_sql_query",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-09T10:12:03.261Z",
+          "endTime": "2026-06-09T10:12:04.332Z",
+          "latencyMs": 1071,
+          "input": {
+            "query": "SELECT ..."
+          },
+          "output": {
+            "rows": 39
+          }
+        },
+        {
+          "id": "trace_g0297_s4",
+          "parentId": "trace_g0297_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T10:12:04.343Z",
+          "endTime": "2026-06-09T10:12:07.262Z",
+          "latencyMs": 2919,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "rows returned"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Here are the results ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 544,
+          "completionTokens": 412,
+          "totalTokens": 956,
+          "costUsd": 0.00548
+        }
+      ],
+      "endTime": "2026-06-09T10:12:07.273Z",
+      "latencyMs": 6868
+    },
+    {
+      "id": "trace_g0030",
+      "name": "image_caption_pipeline",
+      "status": "success",
+      "startTime": "2026-06-09T03:17:34.350Z",
+      "tags": [
+        "production",
+        "vision",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_5511",
+        "sessionId": "sess_ran",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 1675,
+      "totalCostUsd": 0.0074,
+      "spans": [
+        {
+          "id": "trace_g0030_s0",
+          "parentId": null,
+          "name": "ImageCaptionPipelineExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-09T03:17:34.350Z",
+          "input": {
+            "request": "image_caption_pipeline"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-09T03:17:36.461Z",
+          "latencyMs": 2111
+        },
+        {
+          "id": "trace_g0030_s1",
+          "parentId": "trace_g0030_s0",
+          "name": "download_image",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-09T03:17:34.373Z",
+          "endTime": "2026-06-09T03:17:35.184Z",
+          "latencyMs": 811,
+          "input": {
+            "url": "https://cdn.acme.com/img.jpg"
+          },
+          "output": {
+            "bytes": 317842
+          }
+        },
+        {
+          "id": "trace_g0030_s2",
+          "parentId": "trace_g0030_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T03:17:35.207Z",
+          "endTime": "2026-06-09T03:17:36.455Z",
+          "latencyMs": 1248,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "[image] Caption this."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "A photo of ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1241,
+          "completionTokens": 434,
+          "totalTokens": 1675,
+          "costUsd": 0.007442
+        }
+      ],
+      "endTime": "2026-06-09T03:17:36.461Z",
+      "latencyMs": 2111,
+      "feedback": {
+        "rating": "up",
+        "score": 0.41,
+        "comment": "Hallucinated a detail"
+      }
+    },
+    {
+      "id": "trace_g0230",
+      "name": "translation_batch",
+      "status": "success",
+      "startTime": "2026-06-09T00:04:58.599Z",
+      "tags": [
+        "production",
+        "batch",
+        "i18n",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_5920",
+        "sessionId": "sess_8avm",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 1464,
+      "totalCostUsd": 0.0013,
+      "spans": [
+        {
+          "id": "trace_g0230_s0",
+          "parentId": null,
+          "name": "TranslationBatchExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-09T00:04:58.599Z",
+          "input": {
+            "request": "translation_batch"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-09T00:04:59.598Z",
+          "latencyMs": 999
+        },
+        {
+          "id": "trace_g0230_s1",
+          "parentId": "trace_g0230_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-09T00:04:58.612Z",
+          "endTime": "2026-06-09T00:04:59.578Z",
+          "latencyMs": 966,
+          "input": {
+            "text": "Welcome to your dashboard",
+            "targetLang": "ja"
+          },
+          "output": {
+            "role": "assistant",
+            "content": "[Japanese] ..."
+          },
+          "model": "claude-haiku-4-5",
+          "promptTokens": 1427,
+          "completionTokens": 37,
+          "totalTokens": 1464,
+          "costUsd": 0.00129
+        }
+      ],
+      "endTime": "2026-06-09T00:04:59.598Z",
+      "latencyMs": 999
+    },
+    {
+      "id": "trace_g0467",
+      "name": "image_caption_pipeline",
+      "status": "success",
+      "startTime": "2026-06-08T19:32:34.946Z",
+      "tags": [
+        "production",
+        "vision",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_4855",
+        "sessionId": "sess_j74k",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 1548,
+      "totalCostUsd": 0.0075,
+      "spans": [
+        {
+          "id": "trace_g0467_s0",
+          "parentId": null,
+          "name": "ImageCaptionPipelineExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-08T19:32:34.946Z",
+          "input": {
+            "request": "image_caption_pipeline"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-08T19:32:38.153Z",
+          "latencyMs": 3207
+        },
+        {
+          "id": "trace_g0467_s1",
+          "parentId": "trace_g0467_s0",
+          "name": "download_image",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-08T19:32:34.957Z",
+          "endTime": "2026-06-08T19:32:36.018Z",
+          "latencyMs": 1061,
+          "input": {
+            "url": "https://cdn.acme.com/img.jpg"
+          },
+          "output": {
+            "bytes": 171262
+          }
+        },
+        {
+          "id": "trace_g0467_s2",
+          "parentId": "trace_g0467_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T19:32:36.045Z",
+          "endTime": "2026-06-08T19:32:38.136Z",
+          "latencyMs": 2091,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "[image] Caption this."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "A photo of ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1068,
+          "completionTokens": 480,
+          "totalTokens": 1548,
+          "costUsd": 0.00747
+        }
+      ],
+      "endTime": "2026-06-08T19:32:38.153Z",
+      "latencyMs": 3207,
+      "feedback": {
+        "rating": "down",
+        "score": 0.12,
+        "comment": "Wrong tool used"
+      }
+    },
+    {
+      "id": "trace_g0395",
+      "name": "code_review_agent",
+      "status": "success",
+      "startTime": "2026-06-08T19:02:53.422Z",
+      "tags": [
+        "development",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_4179",
+        "sessionId": "sess_addn",
+        "environment": "development",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 4856,
+      "totalCostUsd": 0.015,
+      "spans": [
+        {
+          "id": "trace_g0395_s0",
+          "parentId": null,
+          "name": "CodeReviewAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-08T19:02:53.422Z",
+          "input": {
+            "request": "code_review_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-08T19:02:57.897Z",
+          "latencyMs": 4475
+        },
+        {
+          "id": "trace_g0395_s1",
+          "parentId": "trace_g0395_s0",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-08T19:02:53.452Z",
+          "endTime": "2026-06-08T19:02:54.059Z",
+          "latencyMs": 607,
+          "input": {
+            "pr": 248
+          },
+          "output": {
+            "files": 11
+          }
+        },
+        {
+          "id": "trace_g0395_s2",
+          "parentId": "trace_g0395_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T19:02:54.085Z",
+          "endTime": "2026-06-08T19:02:56.107Z",
+          "latencyMs": 2022,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found N issues ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2341,
+          "completionTokens": 339,
+          "totalTokens": 2680,
+          "costUsd": 0.009243
+        },
+        {
+          "id": "trace_g0395_s3",
+          "parentId": "trace_g0395_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T19:02:56.118Z",
+          "endTime": "2026-06-08T19:02:57.872Z",
+          "latencyMs": 1754,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Format as comments."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "- comment ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2139,
+          "completionTokens": 37,
+          "totalTokens": 2176,
+          "costUsd": 0.005717
+        }
+      ],
+      "endTime": "2026-06-08T19:02:57.897Z",
+      "latencyMs": 4475
+    },
+    {
+      "id": "trace_g0412",
+      "name": "content_summarizer",
+      "status": "success",
+      "startTime": "2026-06-08T14:56:56.455Z",
+      "tags": [
+        "production",
+        "batch",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_5501",
+        "sessionId": "sess_aw21",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 2805,
+      "totalCostUsd": 0.0119,
+      "spans": [
+        {
+          "id": "trace_g0412_s0",
+          "parentId": null,
+          "name": "ContentSummarizerExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-08T14:56:56.455Z",
+          "input": {
+            "request": "content_summarizer"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-08T14:56:57.282Z",
+          "latencyMs": 827
+        },
+        {
+          "id": "trace_g0412_s1",
+          "parentId": "trace_g0412_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T14:56:56.473Z",
+          "endTime": "2026-06-08T14:56:57.218Z",
+          "latencyMs": 745,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Summarize the launch plan."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Summary: ..."
+          },
+          "model": "claude-sonnet-4-6",
+          "promptTokens": 2511,
+          "completionTokens": 294,
+          "totalTokens": 2805,
+          "costUsd": 0.011943
+        },
+        {
+          "id": "trace_g0412_s2",
+          "parentId": "trace_g0412_s0",
+          "name": "parse_summary",
+          "type": "parser",
+          "status": "success",
+          "startTime": "2026-06-08T14:56:57.225Z",
+          "endTime": "2026-06-08T14:56:57.259Z",
+          "latencyMs": 34,
+          "input": {
+            "raw": "..."
+          },
+          "output": {
+            "summary": "..."
+          }
+        }
+      ],
+      "endTime": "2026-06-08T14:56:57.282Z",
+      "latencyMs": 827
+    },
+    {
+      "id": "trace_g0348",
+      "name": "sql_analyst_agent",
+      "status": "error",
+      "startTime": "2026-06-08T08:15:52.553Z",
+      "tags": [
+        "staging",
+        "analytics",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6511",
+        "sessionId": "sess_cmm8",
+        "environment": "staging",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 1856,
+      "totalCostUsd": 0.0058,
+      "spans": [
+        {
+          "id": "trace_g0348_s0",
+          "parentId": null,
+          "name": "SqlAnalystAgentExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-08T08:15:52.553Z",
+          "input": {
+            "request": "sql_analyst_agent"
+          },
+          "output": null,
+          "endTime": "2026-06-08T08:15:55.866Z",
+          "latencyMs": 3313,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0348_s1",
+          "parentId": "trace_g0348_s0",
+          "name": "list_tables",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-08T08:15:52.576Z",
+          "endTime": "2026-06-08T08:15:52.728Z",
+          "latencyMs": 152,
+          "input": {},
+          "output": {
+            "tables": [
+              "orders",
+              "products",
+              "customers"
+            ]
+          }
+        },
+        {
+          "id": "trace_g0348_s2",
+          "parentId": "trace_g0348_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T08:15:52.735Z",
+          "endTime": "2026-06-08T08:15:54.380Z",
+          "latencyMs": 1645,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Top 5 products by revenue last quarter"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "```sql\nSELECT ...\n```"
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1698,
+          "completionTokens": 158,
+          "totalTokens": 1856,
+          "costUsd": 0.005825
+        },
+        {
+          "id": "trace_g0348_s3",
+          "parentId": "trace_g0348_s0",
+          "name": "run_sql_query",
+          "type": "tool",
+          "status": "error",
+          "startTime": "2026-06-08T08:15:54.400Z",
+          "endTime": "2026-06-08T08:15:55.844Z",
+          "latencyMs": 1444,
+          "input": {
+            "query": "SELECT ..."
+          },
+          "output": null,
+          "error": "TimeoutError: vector_store_timeout after 3000ms"
+        }
+      ],
+      "endTime": "2026-06-08T08:15:55.866Z",
+      "latencyMs": 3313
+    },
+    {
+      "id": "trace_g0425",
+      "name": "content_summarizer",
+      "status": "success",
+      "startTime": "2026-06-08T04:52:54.616Z",
+      "tags": [
+        "staging",
+        "batch",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_7313",
+        "sessionId": "sess_oa1",
+        "environment": "staging",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 3152,
+      "totalCostUsd": 0.0162,
+      "spans": [
+        {
+          "id": "trace_g0425_s0",
+          "parentId": null,
+          "name": "ContentSummarizerExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-08T04:52:54.616Z",
+          "input": {
+            "request": "content_summarizer"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-08T04:52:56.446Z",
+          "latencyMs": 1830
+        },
+        {
+          "id": "trace_g0425_s1",
+          "parentId": "trace_g0425_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T04:52:54.632Z",
+          "endTime": "2026-06-08T04:52:56.364Z",
+          "latencyMs": 1732,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Summarize the Q2 board notes."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Summary: ..."
+          },
+          "model": "claude-sonnet-4-6",
+          "promptTokens": 2588,
+          "completionTokens": 564,
+          "totalTokens": 3152,
+          "costUsd": 0.016224
+        },
+        {
+          "id": "trace_g0425_s2",
+          "parentId": "trace_g0425_s0",
+          "name": "parse_summary",
+          "type": "parser",
+          "status": "success",
+          "startTime": "2026-06-08T04:52:56.373Z",
+          "endTime": "2026-06-08T04:52:56.433Z",
+          "latencyMs": 60,
+          "input": {
+            "raw": "..."
+          },
+          "output": {
+            "summary": "..."
+          }
+        }
+      ],
+      "endTime": "2026-06-08T04:52:56.446Z",
+      "latencyMs": 1830
+    },
+    {
+      "id": "trace_01HX8R3T",
+      "name": "code_review_agent",
+      "status": "error",
+      "startTime": "2026-06-08T04:34:18.897Z",
+      "endTime": "2026-06-08T04:34:28.417Z",
+      "latencyMs": 9520,
+      "totalTokens": 11920,
+      "totalCostUsd": 0.0642,
+      "tags": [
+        "production",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_1102",
+        "sessionId": "sess_ij77",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "spans": [
+        {
+          "id": "span_f1",
+          "parentId": null,
+          "name": "CodeReviewExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-08T04:34:18.897Z",
+          "endTime": "2026-06-08T04:34:28.417Z",
+          "latencyMs": 9520,
+          "input": {
+            "pr": "https://github.com/acme/app/pull/482"
+          },
+          "output": null,
+          "error": "RateLimitError: 429 from openai after 3 retries"
+        },
+        {
+          "id": "span_f2",
+          "parentId": "span_f1",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-08T04:34:18.927Z",
+          "endTime": "2026-06-08T04:34:19.637Z",
+          "latencyMs": 710,
+          "input": {
+            "pr": 482
+          },
+          "output": {
+            "files": 12,
+            "additions": 340,
+            "deletions": 88
+          }
+        },
+        {
+          "id": "span_f3",
+          "parentId": "span_f1",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T04:34:19.647Z",
+          "endTime": "2026-06-08T04:34:24.197Z",
+          "latencyMs": 4550,
+          "model": "gpt-4o",
+          "promptTokens": 5800,
+          "completionTokens": 920,
+          "totalTokens": 6720,
+          "costUsd": 0.0512,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff for bugs and style issues."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found 3 issues: (1) unhandled null in parseUser, (2) missing await on save(), (3) inconsistent naming in utils.ts."
+          }
+        },
+        {
+          "id": "span_f4",
+          "parentId": "span_f1",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "error",
+          "startTime": "2026-06-08T04:34:24.207Z",
+          "endTime": "2026-06-08T04:34:28.417Z",
+          "latencyMs": 4210,
+          "model": "gpt-4o",
+          "promptTokens": 5200,
+          "completionTokens": 0,
+          "totalTokens": 5200,
+          "costUsd": 0.013,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Now format the review as GitHub comments."
+              }
+            ]
+          },
+          "output": null,
+          "error": "RateLimitError: 429 Too Many Requests"
+        }
+      ]
+    },
+    {
+      "id": "trace_g0426",
+      "name": "code_review_agent",
+      "status": "success",
+      "startTime": "2026-06-08T01:30:49.468Z",
+      "tags": [
+        "production",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_9968",
+        "sessionId": "sess_1tkv",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 3536,
+      "totalCostUsd": 0.0149,
+      "spans": [
+        {
+          "id": "trace_g0426_s0",
+          "parentId": null,
+          "name": "CodeReviewAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-08T01:30:49.468Z",
+          "input": {
+            "request": "code_review_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-08T01:30:55.009Z",
+          "latencyMs": 5541
+        },
+        {
+          "id": "trace_g0426_s1",
+          "parentId": "trace_g0426_s0",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-08T01:30:49.491Z",
+          "endTime": "2026-06-08T01:30:49.787Z",
+          "latencyMs": 296,
+          "input": {
+            "pr": 404
+          },
+          "output": {
+            "files": 12
+          }
+        },
+        {
+          "id": "trace_g0426_s2",
+          "parentId": "trace_g0426_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T01:30:49.794Z",
+          "endTime": "2026-06-08T01:30:53.251Z",
+          "latencyMs": 3457,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found N issues ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 324,
+          "completionTokens": 258,
+          "totalTokens": 582,
+          "costUsd": 0.00339
+        },
+        {
+          "id": "trace_g0426_s3",
+          "parentId": "trace_g0426_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-08T01:30:53.274Z",
+          "endTime": "2026-06-08T01:30:54.983Z",
+          "latencyMs": 1709,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Format as comments."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "- comment ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2409,
+          "completionTokens": 545,
+          "totalTokens": 2954,
+          "costUsd": 0.011473
+        }
+      ],
+      "endTime": "2026-06-08T01:30:55.009Z",
+      "latencyMs": 5541
+    },
+    {
+      "id": "trace_01HX8M4P",
+      "name": "rag_doc_qa",
+      "status": "error",
+      "startTime": "2026-06-07T23:34:04.649Z",
+      "endTime": "2026-06-07T23:34:08.169Z",
+      "latencyMs": 3520,
+      "totalTokens": 12,
+      "totalCostUsd": 2e-7,
+      "tags": [
+        "production",
+        "rag"
+      ],
+      "metadata": {
+        "userId": "user_2201",
+        "sessionId": "sess_bb02",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "spans": [
+        {
+          "id": "span_b1",
+          "parentId": null,
+          "name": "RetrievalQA",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-07T23:34:04.649Z",
+          "endTime": "2026-06-07T23:34:08.169Z",
+          "latencyMs": 3520,
+          "input": {
+            "question": "What is our data retention period for EU customers?"
+          },
+          "output": null,
+          "error": "ToolException: vector_store_timeout after 3000ms"
+        },
+        {
+          "id": "span_b2",
+          "parentId": "span_b1",
+          "name": "embed_query",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T23:34:04.669Z",
+          "endTime": "2026-06-07T23:34:05.039Z",
+          "latencyMs": 370,
+          "model": "text-embedding-3-small",
+          "promptTokens": 12,
+          "completionTokens": 0,
+          "totalTokens": 12,
+          "costUsd": 2e-7,
+          "input": {
+            "text": "What is our data retention period for EU customers?"
+          },
+          "output": {
+            "dimensions": 1536
+          }
+        },
+        {
+          "id": "span_b3",
+          "parentId": "span_b1",
+          "name": "pinecone_search",
+          "type": "retriever",
+          "status": "error",
+          "startTime": "2026-06-07T23:34:05.049Z",
+          "endTime": "2026-06-07T23:34:08.169Z",
+          "latencyMs": 3120,
+          "input": {
+            "topK": 5,
+            "namespace": "policies"
+          },
+          "output": null,
+          "error": "TimeoutError: vector_store_timeout after 3000ms"
+        }
+      ]
+    },
+    {
+      "id": "trace_g0028",
+      "name": "sql_analyst_agent",
+      "status": "success",
+      "startTime": "2026-06-07T21:08:39.416Z",
+      "tags": [
+        "production",
+        "analytics",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6850",
+        "sessionId": "sess_8t3x",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 4590,
+      "totalCostUsd": 0.0137,
+      "spans": [
+        {
+          "id": "trace_g0028_s0",
+          "parentId": null,
+          "name": "SqlAnalystAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-07T21:08:39.416Z",
+          "input": {
+            "request": "sql_analyst_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-07T21:08:45.262Z",
+          "latencyMs": 5846
+        },
+        {
+          "id": "trace_g0028_s1",
+          "parentId": "trace_g0028_s0",
+          "name": "list_tables",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-07T21:08:39.433Z",
+          "endTime": "2026-06-07T21:08:39.610Z",
+          "latencyMs": 177,
+          "input": {},
+          "output": {
+            "tables": [
+              "orders",
+              "products",
+              "customers"
+            ]
+          }
+        },
+        {
+          "id": "trace_g0028_s2",
+          "parentId": "trace_g0028_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T21:08:39.636Z",
+          "endTime": "2026-06-07T21:08:41.193Z",
+          "latencyMs": 1557,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Monthly active users trend over the last year"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "```sql\nSELECT ...\n```"
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2594,
+          "completionTokens": 147,
+          "totalTokens": 2741,
+          "costUsd": 0.007955
+        },
+        {
+          "id": "trace_g0028_s3",
+          "parentId": "trace_g0028_s0",
+          "name": "run_sql_query",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-07T21:08:41.202Z",
+          "endTime": "2026-06-07T21:08:42.340Z",
+          "latencyMs": 1138,
+          "input": {
+            "query": "SELECT ..."
+          },
+          "output": {
+            "rows": 23
+          }
+        },
+        {
+          "id": "trace_g0028_s4",
+          "parentId": "trace_g0028_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T21:08:42.350Z",
+          "endTime": "2026-06-07T21:08:45.250Z",
+          "latencyMs": 2900,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "rows returned"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Here are the results ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1704,
+          "completionTokens": 145,
+          "totalTokens": 1849,
+          "costUsd": 0.00571
+        }
+      ],
+      "endTime": "2026-06-07T21:08:45.262Z",
+      "latencyMs": 5846
+    },
+    {
+      "id": "trace_g0178",
+      "name": "translation_batch",
+      "status": "success",
+      "startTime": "2026-06-07T20:58:02.244Z",
+      "tags": [
+        "production",
+        "batch",
+        "i18n",
+        "claude"
+      ],
+      "metadata": {
+        "userId": "user_2851",
+        "sessionId": "sess_k5qa",
+        "environment": "production",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 1457,
+      "totalCostUsd": 0.0015,
+      "spans": [
+        {
+          "id": "trace_g0178_s0",
+          "parentId": null,
+          "name": "TranslationBatchExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-07T20:58:02.244Z",
+          "input": {
+            "request": "translation_batch"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-07T20:58:02.702Z",
+          "latencyMs": 458
+        },
+        {
+          "id": "trace_g0178_s1",
+          "parentId": "trace_g0178_s0",
+          "name": "ChatAnthropic",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T20:58:02.254Z",
+          "endTime": "2026-06-07T20:58:02.696Z",
+          "latencyMs": 442,
+          "input": {
+            "text": "Welcome to your dashboard",
+            "targetLang": "ja"
+          },
+          "output": {
+            "role": "assistant",
+            "content": "[Japanese] ..."
+          },
+          "model": "claude-haiku-4-5",
+          "promptTokens": 1344,
+          "completionTokens": 113,
+          "totalTokens": 1457,
+          "costUsd": 0.001527
+        }
+      ],
+      "endTime": "2026-06-07T20:58:02.702Z",
+      "latencyMs": 458
+    },
+    {
+      "id": "trace_g0056",
+      "name": "sql_analyst_agent",
+      "status": "success",
+      "startTime": "2026-06-07T16:13:05.390Z",
+      "tags": [
+        "production",
+        "analytics",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_1896",
+        "sessionId": "sess_cy19",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 4539,
+      "totalCostUsd": 0.0156,
+      "spans": [
+        {
+          "id": "trace_g0056_s0",
+          "parentId": null,
+          "name": "SqlAnalystAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-07T16:13:05.390Z",
+          "input": {
+            "request": "sql_analyst_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-07T16:13:10.505Z",
+          "latencyMs": 5115
+        },
+        {
+          "id": "trace_g0056_s1",
+          "parentId": "trace_g0056_s0",
+          "name": "list_tables",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-07T16:13:05.414Z",
+          "endTime": "2026-06-07T16:13:05.573Z",
+          "latencyMs": 159,
+          "input": {},
+          "output": {
+            "tables": [
+              "orders",
+              "products",
+              "customers"
+            ]
+          }
+        },
+        {
+          "id": "trace_g0056_s2",
+          "parentId": "trace_g0056_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T16:13:05.590Z",
+          "endTime": "2026-06-07T16:13:08.541Z",
+          "latencyMs": 2951,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Churn rate broken down by plan tier"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "```sql\nSELECT ...\n```"
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1128,
+          "completionTokens": 301,
+          "totalTokens": 1429,
+          "costUsd": 0.00583
+        },
+        {
+          "id": "trace_g0056_s3",
+          "parentId": "trace_g0056_s0",
+          "name": "run_sql_query",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-07T16:13:08.552Z",
+          "endTime": "2026-06-07T16:13:09.550Z",
+          "latencyMs": 998,
+          "input": {
+            "query": "SELECT ..."
+          },
+          "output": {
+            "rows": 36
+          }
+        },
+        {
+          "id": "trace_g0056_s4",
+          "parentId": "trace_g0056_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T16:13:09.557Z",
+          "endTime": "2026-06-07T16:13:10.496Z",
+          "latencyMs": 939,
+          "input": {
+            "messages": [
+              {
+                "role": "tool",
+                "content": "rows returned"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Here are the results ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2847,
+          "completionTokens": 263,
+          "totalTokens": 3110,
+          "costUsd": 0.009748
+        }
+      ],
+      "endTime": "2026-06-07T16:13:10.505Z",
+      "latencyMs": 5115
+    },
+    {
+      "id": "trace_g0214",
+      "name": "code_review_agent",
+      "status": "success",
+      "startTime": "2026-06-07T13:20:05.843Z",
+      "tags": [
+        "staging",
+        "dev-tools",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_8201",
+        "sessionId": "sess_6djl",
+        "environment": "staging",
+        "appVersion": "2.5.0-rc1"
+      },
+      "totalTokens": 5393,
+      "totalCostUsd": 0.0185,
+      "spans": [
+        {
+          "id": "trace_g0214_s0",
+          "parentId": null,
+          "name": "CodeReviewAgentExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-07T13:20:05.843Z",
+          "input": {
+            "request": "code_review_agent"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-07T13:20:11.772Z",
+          "latencyMs": 5929
+        },
+        {
+          "id": "trace_g0214_s1",
+          "parentId": "trace_g0214_s0",
+          "name": "fetch_diff",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-07T13:20:05.855Z",
+          "endTime": "2026-06-07T13:20:06.075Z",
+          "latencyMs": 220,
+          "input": {
+            "pr": 705
+          },
+          "output": {
+            "files": 14
+          }
+        },
+        {
+          "id": "trace_g0214_s2",
+          "parentId": "trace_g0214_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T13:20:06.091Z",
+          "endTime": "2026-06-07T13:20:09.557Z",
+          "latencyMs": 3466,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Review this diff."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Found N issues ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2249,
+          "completionTokens": 387,
+          "totalTokens": 2636,
+          "costUsd": 0.009493
+        },
+        {
+          "id": "trace_g0214_s3",
+          "parentId": "trace_g0214_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T13:20:09.576Z",
+          "endTime": "2026-06-07T13:20:11.753Z",
+          "latencyMs": 2177,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Format as comments."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "- comment ..."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2477,
+          "completionTokens": 280,
+          "totalTokens": 2757,
+          "costUsd": 0.008993
+        }
+      ],
+      "endTime": "2026-06-07T13:20:11.772Z",
+      "latencyMs": 5929
+    },
+    {
+      "id": "trace_g0292",
+      "name": "sql_analyst_agent",
+      "status": "error",
+      "startTime": "2026-06-07T11:45:52.775Z",
+      "tags": [
+        "production",
+        "analytics",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_7775",
+        "sessionId": "sess_5cqs",
+        "environment": "production",
+        "appVersion": "2.4.1"
+      },
+      "totalTokens": 747,
+      "totalCostUsd": 0.0034,
+      "spans": [
+        {
+          "id": "trace_g0292_s0",
+          "parentId": null,
+          "name": "SqlAnalystAgentExecutor",
+          "type": "chain",
+          "status": "error",
+          "startTime": "2026-06-07T11:45:52.775Z",
+          "input": {
+            "request": "sql_analyst_agent"
+          },
+          "output": null,
+          "endTime": "2026-06-07T11:45:56.720Z",
+          "latencyMs": 3945,
+          "error": "Run failed — see failed span."
+        },
+        {
+          "id": "trace_g0292_s1",
+          "parentId": "trace_g0292_s0",
+          "name": "list_tables",
+          "type": "tool",
+          "status": "success",
+          "startTime": "2026-06-07T11:45:52.797Z",
+          "endTime": "2026-06-07T11:45:52.987Z",
+          "latencyMs": 190,
+          "input": {},
+          "output": {
+            "tables": [
+              "orders",
+              "products",
+              "customers"
+            ]
+          }
+        },
+        {
+          "id": "trace_g0292_s2",
+          "parentId": "trace_g0292_s0",
+          "name": "ChatOpenAI",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T11:45:53.003Z",
+          "endTime": "2026-06-07T11:45:55.249Z",
+          "latencyMs": 2246,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Monthly active users trend over the last year"
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "```sql\nSELECT ...\n```"
+          },
+          "model": "gpt-4o",
+          "promptTokens": 538,
+          "completionTokens": 209,
+          "totalTokens": 747,
+          "costUsd": 0.003435
+        },
+        {
+          "id": "trace_g0292_s3",
+          "parentId": "trace_g0292_s0",
+          "name": "run_sql_query",
+          "type": "tool",
+          "status": "error",
+          "startTime": "2026-06-07T11:45:55.269Z",
+          "endTime": "2026-06-07T11:45:56.693Z",
+          "latencyMs": 1424,
+          "input": {
+            "query": "SELECT ..."
+          },
+          "output": null,
+          "error": "TimeoutError: vector_store_timeout after 3000ms"
+        }
+      ],
+      "endTime": "2026-06-07T11:45:56.720Z",
+      "latencyMs": 3945,
+      "feedback": {
+        "rating": "up",
+        "score": 0.09,
+        "comment": null
+      }
+    },
+    {
+      "id": "trace_g0427",
+      "name": "multi_agent_orchestrator",
+      "status": "success",
+      "startTime": "2026-06-07T11:36:34.313Z",
+      "tags": [
+        "production",
+        "agents",
+        "gpt-4o"
+      ],
+      "metadata": {
+        "userId": "user_6484",
+        "sessionId": "sess_4hjj",
+        "environment": "production",
+        "appVersion": "2.5.0"
+      },
+      "totalTokens": 13151,
+      "totalCostUsd": 0.0328,
+      "spans": [
+        {
+          "id": "trace_g0427_s0",
+          "parentId": null,
+          "name": "MultiAgentOrchestratorExecutor",
+          "type": "chain",
+          "status": "success",
+          "startTime": "2026-06-07T11:36:34.313Z",
+          "input": {
+            "request": "multi_agent_orchestrator"
+          },
+          "output": {
+            "ok": true
+          },
+          "endTime": "2026-06-07T11:36:37.971Z",
+          "latencyMs": 3658
+        },
+        {
+          "id": "trace_g0427_s1",
+          "parentId": "trace_g0427_s0",
+          "name": "router",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T11:36:34.343Z",
+          "endTime": "2026-06-07T11:36:34.833Z",
+          "latencyMs": 490,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Dispatch to workers."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Routing to 3 workers."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2916,
+          "completionTokens": 130,
+          "totalTokens": 3046,
+          "costUsd": 0.00859
+        },
+        {
+          "id": "trace_g0427_s2",
+          "parentId": "trace_g0427_s0",
+          "name": "worker_research",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T11:36:34.860Z",
+          "endTime": "2026-06-07T11:36:36.746Z",
+          "latencyMs": 1886,
+          "input": {
+            "task": "research"
+          },
+          "output": {
+            "done": true
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2105,
+          "completionTokens": 144,
+          "totalTokens": 2249,
+          "costUsd": 0.006703
+        },
+        {
+          "id": "trace_g0427_s3",
+          "parentId": "trace_g0427_s0",
+          "name": "worker_draft",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T11:36:34.838Z",
+          "endTime": "2026-06-07T11:36:36.330Z",
+          "latencyMs": 1492,
+          "input": {
+            "task": "draft"
+          },
+          "output": {
+            "done": true
+          },
+          "model": "gpt-4o-mini",
+          "promptTokens": 2595,
+          "completionTokens": 331,
+          "totalTokens": 2926,
+          "costUsd": 0.000588
+        },
+        {
+          "id": "trace_g0427_s4",
+          "parentId": "trace_g0427_s0",
+          "name": "worker_critique",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T11:36:34.866Z",
+          "endTime": "2026-06-07T11:36:37.058Z",
+          "latencyMs": 2192,
+          "input": {
+            "task": "critique"
+          },
+          "output": {
+            "done": true
+          },
+          "model": "gpt-4o",
+          "promptTokens": 2933,
+          "completionTokens": 539,
+          "totalTokens": 3472,
+          "costUsd": 0.012722
+        },
+        {
+          "id": "trace_g0427_s5",
+          "parentId": "trace_g0427_s0",
+          "name": "aggregate",
+          "type": "llm",
+          "status": "success",
+          "startTime": "2026-06-07T11:36:37.066Z",
+          "endTime": "2026-06-07T11:36:37.946Z",
+          "latencyMs": 880,
+          "input": {
+            "messages": [
+              {
+                "role": "user",
+                "content": "Merge worker outputs."
+              }
+            ]
+          },
+          "output": {
+            "role": "assistant",
+            "content": "Final answer."
+          },
+          "model": "gpt-4o",
+          "promptTokens": 1389,
+          "completionTokens": 69,
+          "totalTokens": 1458,
+          "costUsd": 0.004162
+        }
+      ],
+      "endTime": "2026-06-07T11:36:37.971Z",
+      "latencyMs": 3658
+    }
+  ]
+}
